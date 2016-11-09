@@ -13,7 +13,7 @@ exports.get = function (req) {
 
     var model = {
         jsUrl: portal.assetUrl({path: "/js/main.js"}),
-        cssUrl: portal.assetUrl({path: "/css/main.css"}),
+        assetsUrl: portal.assetUrl({path: ""}),
         repoList: repoList
     };
 

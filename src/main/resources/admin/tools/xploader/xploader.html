@@ -1,7 +1,8 @@
 <html>
 <head>
     <title>xpLoader</title>
-    <link href="{{cssUrl}}" type="text/css"/>
+
+    <link rel="stylesheet" type="text/css" href="{{assetsUrl}}/css/main.css"/>
     <script src="http://code.jquery.com/jquery-1.12.0.min.js"></script>
 
     <script src="{{jsUrl}}"></script>
@@ -25,8 +26,6 @@
 
 <div id="status">
 </div>
-
-<div id="repoMessage" class="okMessage"></div>
 
 <div id="createRepo">
     <div class="text-input">
@@ -75,6 +74,11 @@
         <div id="fieldsList" class="fields-list">
         </div>
     </form>
+</div>
+
+<div id="messageBox">
+    <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+    <span id="repoMessage"></span>
 </div>
 
 </body>

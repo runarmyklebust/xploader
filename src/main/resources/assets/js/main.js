@@ -21,6 +21,7 @@ $(function () {
 
 var initializeView = function () {
     $('#status').hide();
+    $('#messageBox').hide();
 };
 
 function createRepo() {
@@ -90,22 +91,25 @@ var renderRepoList = function (result) {
 };
 
 var renderRepoView = function (result) {
-    console.log(result);
     var html = "";
+    var messageBox = $('#messageBox');
 
     if (result.error) {
         html += result.error;
-    }
-
-    if (result.message) {
+        messageBox.removeClass('message').addClass('error');
+    } else if (result.message) {
         html += result.message;
+        messageBox.removeClass('error').addClass('message');
     }
 
-    renderMessage(html);
-};
-
-var renderMessage = function (html) {
     $('#repoMessage').html(html);
+
+    messageBox.show();
+
+    setTimeout(function () {
+        messageBox.fadeOut(1000, function () {
+        });
+    }, 1500);
 };
 
 

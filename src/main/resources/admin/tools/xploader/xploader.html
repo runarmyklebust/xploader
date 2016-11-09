@@ -1,0 +1,69 @@
+<html>
+<head>
+    <title>xpLoader</title>
+    <link href="{{cssUrl}}" type="text/css"/>
+    <script src="http://code.jquery.com/jquery-1.12.0.min.js"></script>
+
+    <script src="{{jsUrl}}"></script>
+
+    <script>
+        var loaderServiceUrl = '{{loaderServiceUrl}}';
+        var parserServiceUrl = '{{parserServiceUrl}}';
+        var statusServiceUrl = '{{statusServiceUrl}}';
+    </script>
+
+    <script data-th-src="${portal.assetUrl({'_path=js/jquery-2.2.3.min.js'})}" src="../../../assets/js/jquery-2.2.3.min.js"></script>
+</head>
+<body>
+<h1>xpLoader</h1>
+
+<div id="container"></div>
+
+<div id="status">
+
+</div>
+
+<div id="repoList">
+    <form name="fileForm" action="{{loaderServiceUrl}}?upload" method="post" enctype="multipart/form-data">
+    <select>
+        <div id="repoListOptions">
+            {{#repoList}}
+            <div id="repoListOption">
+                <option value="{id}}">{{id}}</option>
+            </div>
+            {{/repoList}}
+        </div>
+    </select>
+
+    <ul>
+
+    </ul>
+</div>
+
+<div id="loader">
+
+        <div class="upload-file">
+            <div>
+                <label>Select a file</label><br>
+                <input id="fileinput" name="file" type="file" class="file-name" onchange="fileUploaded();">
+            </div>
+        </div>
+        <div class="text-input">
+            <label>Format</label><br>
+            <input type="text" name="format" placeholder="A comma separated format of fields that descriped ">
+        </div>
+        <div class="button-toolbar">
+            <button type="submit" name="upload" class="upload-button">Upload</button>
+        </div>
+        <div>
+            <label>PublishOnly</label><br>
+            <label for="publishOnly"></label><input id="publishOnly" name="publishOnly" type="checkbox">
+        </div>
+
+        <div id="fieldsList" class="fields-list">
+        </div>
+    </form>
+</div>
+
+</body>
+</html>

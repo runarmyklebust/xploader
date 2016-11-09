@@ -18,7 +18,19 @@ exports.get = function (req) {
     };
 
     model.loaderServiceUrl = portal.serviceUrl({
-        service: 'csv-loader-service'
+        service: 'xploader-service'
+    });
+
+    model.createRepoServiceUrl = portal.serviceUrl({
+        service: 'create-repo-service'
+    });
+
+    model.deleteRepoServiceUrl = portal.serviceUrl({
+        service: 'delete-repo-service'
+    });
+
+    model.listRepoServiceUrl = portal.serviceUrl({
+        service: 'list-repo-service'
     });
 
     model.statusServiceUrl = portal.serviceUrl({

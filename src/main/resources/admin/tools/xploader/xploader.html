@@ -10,6 +10,10 @@
         var loaderServiceUrl = '{{loaderServiceUrl}}';
         var parserServiceUrl = '{{parserServiceUrl}}';
         var statusServiceUrl = '{{statusServiceUrl}}';
+        var createRepoServiceUrl = '{{createRepoServiceUrl}}';
+        var deleteRepoServiceUrl = '{{deleteRepoServiceUrl}}';
+        var listRepoServiceUrl = '{{listRepoServiceUrl}}';
+
     </script>
 
     <script data-th-src="${portal.assetUrl({'_path=js/jquery-2.2.3.min.js'})}" src="../../../assets/js/jquery-2.2.3.min.js"></script>
@@ -20,20 +24,29 @@
 <div id="container"></div>
 
 <div id="status">
+</div>
 
+<div id="repoMessage" class="okMessage"></div>
+
+<div id="createRepo">
+    <div class="text-input">
+        <label>RepositoryId</label><br>
+        <input id="repoIdInput" type="text" name="repoId" placeholder="Repository id">
+    </div>
+    <div class="button-toolbar">
+        <button id="createRepoButton" class="upload-button">Create Repository</button>
+    </div>
 </div>
 
 <div id="repoList">
-    <form name="fileForm" action="{{loaderServiceUrl}}?upload" method="post" enctype="multipart/form-data">
-    <select>
-        <div id="repoListOptions">
-            {{#repoList}}
-            <div id="repoListOption">
-                <option value="{id}}">{{id}}</option>
-            </div>
-            {{/repoList}}
-        </div>
+
+    <select id="selectedRepoId">
+
     </select>
+    <div class="button-toolbar">
+        <button id="deleteRepoButton" class="upload-button">Delete Repository</button>
+    </div>
+
 
     <ul>
 
@@ -41,7 +54,7 @@
 </div>
 
 <div id="loader">
-
+    <form name="fileForm" action="{{loaderServiceUrl}}?upload" method="post" enctype="multipart/form-data">
         <div class="upload-file">
             <div>
                 <label>Select a file</label><br>
@@ -59,7 +72,6 @@
             <label>PublishOnly</label><br>
             <label for="publishOnly"></label><input id="publishOnly" name="publishOnly" type="checkbox">
         </div>
-
         <div id="fieldsList" class="fields-list">
         </div>
     </form>

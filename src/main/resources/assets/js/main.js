@@ -2,10 +2,112 @@ $(function () {
 
     getStatus();
 
-    setInterval(function () {
-        getStatus();
-    }, 2000);
+    //  setInterval(function () {
+    //      getStatus();
+    //  }, 2000);
+
+    $('#createRepoButton').click(function () {
+        createRepo();
+    });
+
+    $('#deleteRepoButton').click(function () {
+        deleteRepo();
+    });
+
+    initializeView();
+    refreshRepoList();
 });
+
+
+var initializeView = function () {
+    $('#status').hide();
+};
+
+function createRepo() {
+    var repoId = $('#repoIdInput').val();
+
+    var data = {
+        repoId: repoId
+    };
+
+    jQuery.ajax({
+        url: createRepoServiceUrl,
+        cache: false,
+        data: data,
+        type: 'POST',
+        success: function (result) {
+            renderRepoView(result);
+            refreshRepoList();
+        }
+    });
+}
+
+
+function deleteRepo() {
+    var repoId = $('#selectedRepoId').find(":selected").text();
+
+    var data = {
+        repoId: repoId
+    };
+
+    jQuery.ajax({
+        url: deleteRepoServiceUrl,
+        cache: false,
+        data: data,
+        type: 'POST',
+        success: function (result) {
+            renderRepoView(result);
+            refreshRepoList();
+        }
+    });
+}
+
+var refreshRepoList = function () {
+
+    jQuery.ajax({
+        url: listRepoServiceUrl,
+        cache: false,
+        type: 'GET',
+        success: function (result) {
+            renderRepoList(result)
+        }
+    });
+};
+
+var renderRepoList = function (result) {
+    console.log(result);
+
+    var html = "";
+    html += "<div id='repoListOptions'>";
+
+    result.repoList.forEach(function (entry) {
+        html += "<option value='" + entry + "'>" + entry.id + "</option>";
+    });
+
+    html += "</div>";
+
+    $('#selectedRepoId').html(html);
+};
+
+var renderRepoView = function (result) {
+    console.log(result);
+    var html = "";
+
+    if (result.error) {
+        html += result.error;
+    }
+
+    if (result.message) {
+        html += result.message;
+    }
+
+    renderMessage(html);
+};
+
+var renderMessage = function (html) {
+    $('#repoMessage').html(html);
+};
+
 
 function getStatus() {
     jQuery.ajax({

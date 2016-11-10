@@ -22,6 +22,17 @@ $(function () {
 var initializeView = function () {
     $('#status').hide();
     $('#messageBox').hide();
+    toggleRepoManager();
+};
+
+var toogleLoadManager = function () {
+    $('#loadManager').show();
+    $('#repoManager').hide();
+};
+
+var toggleRepoManager = function () {
+    $('#loadManager').hide();
+    $('#repoManager').show();
 };
 
 function createRepo() {
@@ -45,7 +56,7 @@ function createRepo() {
 
 
 function deleteRepo() {
-    var repoId = $('#selectedRepoId').find(":selected").text();
+    var repoId = $('#deleteRepoId').find(":selected").text();
 
     var data = {
         repoId: repoId
@@ -64,7 +75,6 @@ function deleteRepo() {
 }
 
 var refreshRepoList = function () {
-
     jQuery.ajax({
         url: listRepoServiceUrl,
         cache: false,
@@ -79,15 +89,11 @@ var renderRepoList = function (result) {
     console.log(result);
 
     var html = "";
-    html += "<div id='repoListOptions'>";
-
     result.repoList.forEach(function (entry) {
         html += "<option value='" + entry + "'>" + entry.id + "</option>";
     });
-
-    html += "</div>";
-
-    $('#selectedRepoId').html(html);
+    $('#deleteRepoId').html(html);
+    $('#deleteRepoId').material_select();
 };
 
 var renderRepoView = function (result) {

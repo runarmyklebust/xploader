@@ -2,11 +2,15 @@
 <head>
     <title>xpLoader</title>
 
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
     <link rel="stylesheet" type="text/css" href="{{assetsUrl}}/css/main.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.8/css/materialize.min.css">
+
     <script src="http://code.jquery.com/jquery-1.12.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.8/js/materialize.min.js"></script>
 
     <script src="{{jsUrl}}"></script>
-
     <script>
         var loaderServiceUrl = '{{loaderServiceUrl}}';
         var parserServiceUrl = '{{parserServiceUrl}}';
@@ -14,70 +18,68 @@
         var createRepoServiceUrl = '{{createRepoServiceUrl}}';
         var deleteRepoServiceUrl = '{{deleteRepoServiceUrl}}';
         var listRepoServiceUrl = '{{listRepoServiceUrl}}';
-
     </script>
 
     <script data-th-src="${portal.assetUrl({'_path=js/jquery-2.2.3.min.js'})}" src="../../../assets/js/jquery-2.2.3.min.js"></script>
 </head>
 <body>
-<h1>xpLoader</h1>
 
-<div id="container"></div>
-
-<div id="status">
-</div>
-
-<div id="createRepo">
-    <div class="text-input">
-        <label>RepositoryId</label><br>
-        <input id="repoIdInput" type="text" name="repoId" placeholder="Repository id">
+<nav>
+    <div class="nav-wrapper blue">
+        <a href="#" class="brand-logo right">xpLoader</a>
+        <ul id="nav-mobile" class="left hide-on-med-and-down">
+            <li><a href="#" onclick="toogleLoadManager()">Load</a></li>
+            <li><a href="#" onclick="toggleRepoManager()">Manage repositories</a></li>
+        </ul>
     </div>
-    <div class="button-toolbar">
-        <button id="createRepoButton" class="upload-button">Create Repository</button>
-    </div>
-</div>
-
-<div id="repoList">
-
-    <select id="selectedRepoId">
-
-    </select>
-    <div class="button-toolbar">
-        <button id="deleteRepoButton" class="upload-button">Delete Repository</button>
-    </div>
+</nav>
 
 
-    <ul>
-
-    </ul>
-</div>
-
-<div id="loader">
-    <form name="fileForm" action="{{loaderServiceUrl}}?upload" method="post" enctype="multipart/form-data">
-        <div class="upload-file">
-            <div>
-                <label>Select a file</label><br>
-                <input id="fileinput" name="file" type="file" class="file-name" onchange="fileUploaded();">
+<div id="loadManager">
+    <div id="loader">
+        <form class="col s12" name="fileForm" action="{{loaderServiceUrl}}?upload" method="post" enctype="multipart/form-data">
+            <div class="upload-file">
+                <div>
+                    <label>Select a file</label><br>
+                    <input id="fileinput" name="file" type="file" class="file-name" onchange="fileUploaded();">
+                </div>
             </div>
-        </div>
-        <div class="text-input">
-            <label>Format</label><br>
-            <input type="text" name="format" placeholder="A comma separated format of fields that descriped ">
-        </div>
-        <div class="button-toolbar">
-            <button type="submit" name="upload" class="upload-button">Upload</button>
-        </div>
-        <div>
-            <label>PublishOnly</label><br>
-            <label for="publishOnly"></label><input id="publishOnly" name="publishOnly" type="checkbox">
-        </div>
-        <div id="fieldsList" class="fields-list">
-        </div>
-    </form>
+            <div class="text-input">
+                <label>Format</label><br>
+                <input type="text" name="format" placeholder="A comma separated format of fields that descriped ">
+            </div>
+            <div class="button-toolbar">
+                <button type="submit" name="upload" class="upload-button">Upload</button>
+            </div>
+            <div>
+                <label>PublishOnly</label><br>
+                <label for="publishOnly"></label><input id="publishOnly" name="publishOnly" type="checkbox">
+            </div>
+            <div id="fieldsList" class="fields-list">
+            </div>
+        </form>
+    </div>
 </div>
 
-<div id="messageBox">
-    <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+
+<div id="repoManager">
+    <div class="row">
+        <div id="createRepo" class="col s6">
+            <h4>Create repository</h4>
+            <input id="repoIdInput" type="text" placeholder="<new repository id>">
+            <button id="createRepoButton" class="upload-button">Create</button>
+        </div>
+    </div>
+    <div class="row">
+        <div id="repoList" class="input-field col s6">
+            <h4>Delete repository</h4>
+            <select id="deleteRepoId" selected>Choose repository</select>
+            <button id="deleteRepoButton" class="upload-button">Delete</button>
+        </div>
+    </div>
+</div>
+
+<div id="messageBox" class="messageBox">
     <span id="repoMessage"></span>
 </div>
 

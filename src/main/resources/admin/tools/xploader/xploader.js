@@ -9,16 +9,14 @@ exports.get = function (req) {
 
     var repoList = repoLib.list();
 
-    log.info("RepoList: %s", repoList);
-
     var model = {
         jsUrl: portal.assetUrl({path: "/js/main.js"}),
         assetsUrl: portal.assetUrl({path: ""}),
         repoList: repoList
     };
 
-    model.loaderServiceUrl = portal.serviceUrl({
-        service: 'xploader-service'
+    model.dataLoaderService = portal.serviceUrl({
+        service: 'load-data-service'
     });
 
     model.createRepoServiceUrl = portal.serviceUrl({

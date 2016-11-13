@@ -12,7 +12,7 @@
 
     <script src="{{jsUrl}}"></script>
     <script>
-        var loaderServiceUrl = '{{loaderServiceUrl}}';
+        var dataLoaderService = '{{dataLoaderService}}';
         var parserServiceUrl = '{{parserServiceUrl}}';
         var statusServiceUrl = '{{statusServiceUrl}}';
         var createRepoServiceUrl = '{{createRepoServiceUrl}}';
@@ -20,7 +20,6 @@
         var listRepoServiceUrl = '{{listRepoServiceUrl}}';
     </script>
 
-    <script data-th-src="${portal.assetUrl({'_path=js/jquery-2.2.3.min.js'})}" src="../../../assets/js/jquery-2.2.3.min.js"></script>
 </head>
 <body>
 
@@ -36,29 +35,45 @@
 
 
 <div id="loadManager">
-    <div id="loader">
-        <form class="col s12" name="fileForm" action="{{loaderServiceUrl}}?upload" method="post" enctype="multipart/form-data">
-            <div class="upload-file">
-                <div>
-                    <label>Select a file</label><br>
-                    <input id="fileinput" name="file" type="file" class="file-name" onchange="fileUploaded();">
+
+    <div class="row">
+        <form class="col s12" name="fileForm" action="{{dataLoaderService}}" method="post" enctype="multipart/form-data">
+            <h4>Select file for upload</h4>
+            <div class="file-field input-field">
+                <div class="btn">
+                    <span>File</span>
+                    <input type="file" name="file" id="fileinput">
+                </div>
+                <div class="file-path-wrapper">
+                    <input class="file-path validate" type="text" onchange="fileUploaded();">
                 </div>
             </div>
-            <div class="text-input">
-                <label>Format</label><br>
-                <input type="text" name="format" placeholder="A comma separated format of fields that descriped ">
+
+            <div class="row">
+                <div id="fieldsList" class="col 12s"></div>
             </div>
-            <div class="button-toolbar">
-                <button type="submit" name="upload" class="upload-button">Upload</button>
+
+
+            <div class="row">
+                <div id="selectRepoList" class="input-field col s6">
+                    <h4>Select repository</h4>
+                    <select id="selectRepoId" name="selectRepoId">Choose repository</select>
+                </div>
             </div>
-            <div>
-                <label>PublishOnly</label><br>
-                <label for="publishOnly"></label><input id="publishOnly" name="publishOnly" type="checkbox">
-            </div>
-            <div id="fieldsList" class="fields-list">
-            </div>
+
+            <button class="btn light-blue darken-4" type="submit" name="action">Load</button>
         </form>
     </div>
+    <!--
+    <div class="row">
+        <div class="col 12s">
+            <label>Format</label><br>
+            <input type="text" name="format" placeholder="A comma separated format of fields that descriped ">
+            <button type="submit" name="upload" class="upload-button">Upload</button>
+        </div>
+    </div>
+    -->
+
 </div>
 
 
@@ -71,7 +86,7 @@
         </div>
     </div>
     <div class="row">
-        <div id="repoList" class="input-field col s6">
+        <div id="deleteRepoList" class="input-field col s6">
             <h4>Delete repository</h4>
             <select id="deleteRepoId" selected>Choose repository</select>
             <button id="deleteRepoButton" class="upload-button">Delete</button>

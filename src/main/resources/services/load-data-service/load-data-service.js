@@ -12,14 +12,19 @@ var FORMAT_FIELD_NODE_NAME = "field-nodeName-";
 var FORMAT_FIELD_VALUE_TYPE = "value-type-";
 var FORMAT_SIBLING_SELECTOR = "sibling-selector-";
 
+var GSC_FORMAT = null;
+var WSG_UTM = 'WGS84-UTM';
 
 exports.post = function (req) {
+
+    log.info("PARAMS: %s", req.params);
 
     var redirectUrl = "http://localhost:8080/admin/tool/com.enonic.app.xploader/xploader";
 
     var byteSource = portalLib.getMultipartStream("file");
     var file = portalLib.getMultipartItem("file");
     var format = parseFormat(req.params);
+    parseGCSFormat(req.params);
     var repo = "not set";
 
     if (req.params.selectRepoId) {
@@ -62,6 +67,29 @@ function parseFormat(params) {
 
     return fields;
 }
+
+var parseGCSFormat = function (params) {
+
+    GSC_FORMAT = {};
+
+    if (!params.gcsSelector) {
+        GSC_FORMAT = null;
+        return;
+    }
+
+    GSC_FORMAT = {
+        type: params.gcsSelector
+    };
+
+    if (GSC_FORMAT.type === WSG_UTM) {
+        GSC_FORMAT.utm = {};
+        GSC_FORMAT.utm.unit = params.wsg84UtmUnit;
+        GSC_FORMAT.utm.latitudeZone = params.wsg84UtmLatitudeZone
+        GSC_FORMAT.utm.longitudeZone = params.wsg84UtmLongitudeZone;
+    }
+
+};
+
 var doLoadData = function (repo, byteSource, format) {
     var first = true;
     var processed = 0;
@@ -144,13 +172,22 @@ var createValue = function (type, fieldName, value, joinValue) {
         return "nodeLib.reference('" + value + "')";
     }
     else if (type == 'geoPointLat') {
-        return nodeLib.geoPoint(Number(value), Number(joinValue));
+        return createGeoPointValue(value, joinValue);
     }
     else if (type == 'geoPointLon') {
-        return nodeLib.geoPoint(Number(joinValue), Number(value));
+        return createGeoPointValue(joinValue, value);
     }
+
     return value;
 };
+
+var createGeoPointValue = function (lat, lon) {
+
+    log.info("GeoPointValue: %s", JSON.stringify(GSC_FORMAT));
+
+    return nodeLib.geoPoint(lat, lon);
+};
+
 
 var cleanStringValue = function (value) {
 

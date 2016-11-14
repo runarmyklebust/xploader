@@ -56,18 +56,18 @@
             <div class="row" id="gcsSelectorDiv">
                 <h4>Geographic coordinate system</h4>
                 <div class="input-field col 12s">
-                    <select id="gcsSelector" onchange="showGCSSelector(this)">
+                    <select id="gcsSelector" name="gcsSelector" onchange="showGCSSelector(this)">
                         <option value="WGS84-deg">GPS (WGS84) (deg)</option>
                         <option value="WGS84-UTM">GPS (WGS84) (UTM)</option>
                     </select>
                     <div id="WGS84-deg" class="input-field col 6s"></div>
                     <div id="WGS84-UTM" class="input-field col 6s">
-                        <input name="wsg84-utm-longitudeZone" id="wsg84-utm-longitudeZone" placeholder="Longitude Zone (e.g 33)"
+                        <input name="wsg84UtmLongitudeZone" id="wsg84UtmLongitudeZone" placeholder="Longitude Zone (e.g 33)"
                                type="number"
                                class="validate">
-                        <input name="wsg84-utm-latitudeZone" id="wsg84-utm-latitudeZone" placeholder="Latitude Zone (e.g N/E)" type="text"
+                        <input name="wsg84UtmLatitudeZone" id="wsg84UtmLatitudeZone" placeholder="Latitude Zone (e.g N/E)" type="text"
                                class="validate">
-                        <input name="wsg84-utm-unit" id="wsg84-utm-unit" placeholder="Unit (m|km)" type="text" class="validate">
+                        <input name="wsg84UtmUnit" id="wsg84UtmUnit" placeholder="Unit (m|km)" type="text" class="validate">
                     </div>
                 </div>
             </div>

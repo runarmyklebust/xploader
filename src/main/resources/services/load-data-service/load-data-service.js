@@ -2,47 +2,17 @@ var portalLib = require('/lib/xp/portal');
 var xpLoaderLib = require('/lib/xploader');
 var nodeLib = require('/lib/xp/node');
 var ioLib = require('/lib/xp/io');
+var contextLib = require('/lib/xp/context');
+var proj4j = require('/lib/proj4j');
 
-function parseFormat(params) {
-    var fields = [];
-    var i = 0;
+var FORMAT_FIELD_NAME = "field-name-";
+var FORMAT_FIELD_ALIAS = "field-alias-";
+var FORMAT_FIELD_SKIP = "field-skip-";
+var FORMAT_FIELD_NODE_NAME = "field-nodeName-";
+var FORMAT_FIELD_VALUE_TYPE = "value-type-";
+var FORMAT_SIBLING_SELECTOR = "sibling-selector-";
 
-    var fieldNameItem = params["field-name-" + i];
 
-    while (fieldNameItem) {
-        var fieldAlias = params["field-alias-" + i];
-        var fieldSkip = params["field-skip-" + i];
-        var isNodeNameElement = params["field-nodeNameElement-" + i];
-        var valueType = params["value-type-" + i];
-        var field = {};
-        field.name = fieldNameItem;
-        field.alias = fieldAlias;
-        field.skip = fieldSkip == 'on';
-        field.nodeNameElement = isNodeNameElement == 'on';
-        field.valueType = valueType;
-        fields.push(field);
-
-        log.info("Fields: %s", JSON.stringify(fields));
-
-        i++;
-        fieldNameItem = params["field-name-" + i];
-    }
-
-    return fields;
-}
-
-function runPublish() {
-    xpLoaderLib.publish();
-
-    var model = {
-        published: "ok"
-    };
-
-    return {
-        contentType: 'text/plain',
-        body: model
-    }
-}
 exports.post = function (req) {
 
     var redirectUrl = "http://localhost:8080/admin/tool/com.enonic.app.xploader/xploader";
@@ -50,19 +20,13 @@ exports.post = function (req) {
     var byteSource = portalLib.getMultipartStream("file");
     var file = portalLib.getMultipartItem("file");
     var format = parseFormat(req.params);
-
     var repo = "not set";
 
     if (req.params.selectRepoId) {
         repo = req.params.selectRepoId;
     }
 
-    doLoadData(byteSource, file, format);
-//    var result = xpLoaderLib.load(byteSource, format, "content");
-
-    //  log.info("Result: %s", result);
-
-    //log.info("Redirect: %s", redirectUrl);
+    doLoadData(repo, byteSource, format);
 
     return {
         redirect: redirectUrl
@@ -70,24 +34,64 @@ exports.post = function (req) {
 };
 
 
-var doLoadData = function (byteSource, file, format) {
+function parseFormat(params) {
+    var fields = [];
+    var i = 0;
+
+    var fieldNameItem = params[FORMAT_FIELD_NAME + i];
+
+    while (fieldNameItem) {
+        var fieldAlias = params[FORMAT_FIELD_ALIAS + i];
+        var fieldSkip = params[FORMAT_FIELD_SKIP + i];
+        var isNodeNameElement = params[FORMAT_FIELD_NODE_NAME + i];
+        var valueType = params[FORMAT_FIELD_VALUE_TYPE + i];
+        var siblingId = params[FORMAT_SIBLING_SELECTOR + i];
+        var field = {};
+        field.name = fieldNameItem;
+        field.alias = fieldAlias;
+        field.skip = fieldSkip == 'on';
+        field.nodeNameElement = isNodeNameElement == 'on';
+        field.valueType = valueType;
+        if (siblingId) {
+            field.siblingId = siblingId;
+        }
+        fields.push(field);
+        i++;
+        fieldNameItem = params["field-name-" + i];
+    }
+
+    return fields;
+}
+var doLoadData = function (repo, byteSource, format) {
+    var first = true;
+    var processed = 0;
+
     ioLib.processLines(byteSource, function (line) {
-        processLine(line, format);
+        if (!first) {
+            var data = processLine(line, format);
+            runInContext(repo, 'master', function () {
+                nodeLib.create(data);
+            });
+            log.info("Processed [" + ++processed + "]");
+        } else {
+            first = false;
+        }
     });
 };
 
 var processLine = function (line, format) {
-
     var fields = line.split(",");
-    var data = extractData(fields, format);
-
-    log.info("DATA: %s", JSON.stringify(data));
+    return extractData(fields, format);
 };
 
 var extractData = function (fields, format) {
     var data = {};
-
     var name = "";
+
+    if (fields.length != format.length) {
+        log.error("Could not parse this row: %s, skipping", fields);
+        return;
+    }
 
     for (var i = 0; i < fields.length; i++) {
         var formatEntry = format[i];
@@ -105,29 +109,45 @@ var extractData = function (fields, format) {
             name += value;
         }
 
-        data[fieldName] = createValue(type, fieldName, value);
+        var joinValue = null;
+
+        if (formatEntry.siblingId) {
+            joinValue = fields[formatEntry.siblingId];
+        }
+
+        data[fieldName] = createValue(type, fieldName, value, joinValue);
     }
 
     if (name.length > 0) {
         data._name = name;
     }
 
-    log.info("DATA: %s", data);
-
     return data;
+};
+
+var runInContext = function (repo, branch, callback) {
+    return contextLib.run({
+        branch: branch,
+        repository: repo
+    }, callback);
 };
 
 var sanitizeValue = function (type, fieldValue) {
     return cleanStringValue(fieldValue);
 };
 
-var createValue = function (type, fieldName, value) {
+var createValue = function (type, fieldName, value, joinValue) {
     if (type === 'instant') {
-        return 'nodeLib.instant("' + value + '")';
-    } else if (type == 'reference') {
-        return 'nodeLib.reference("' + value + '")';
-    } else if (type == 'geoPoint') {
-        return 'nodeLib.geoPoint("' + value + '"';
+        return "nodeLib.instant('" + value + "')";
+    }
+    else if (type == 'reference') {
+        return "nodeLib.reference('" + value + "')";
+    }
+    else if (type == 'geoPointLat') {
+        return nodeLib.geoPoint(Number(value), Number(joinValue));
+    }
+    else if (type == 'geoPointLon') {
+        return nodeLib.geoPoint(Number(joinValue), Number(value));
     }
     return value;
 };
@@ -143,9 +163,4 @@ var cleanStringValue = function (value) {
     }
 
     return value;
-};
-
-var createName = function () {
-
-
 };

@@ -191,8 +191,6 @@ var createGeoPointValue = function (lat, lon) {
 
         var latLonAsString = proj4j.fromUTM(lonZone, latZone, lon, lat, unit);
 
-        log.info("LatLonAsString: %s", latLonAsString);
-
         return nodeLib.geoPointString(latLonAsString);
     }
 

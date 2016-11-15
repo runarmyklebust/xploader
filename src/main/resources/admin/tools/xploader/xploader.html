@@ -57,8 +57,8 @@
                 <h4>Geographic coordinate system</h4>
                 <div class="input-field col 12s">
                     <select id="gcsSelector" name="gcsSelector" onchange="showGCSSelector(this)">
-                        <option value="WGS84-deg">GPS (WGS84) (deg)</option>
-                        <option value="WGS84-UTM">GPS (WGS84) (UTM)</option>
+                        <option value="WGS84-deg">GPS-WGS84 (deg)</option>
+                        <option value="WGS84-UTM">GPS-UTM/EUREF89</option>
                     </select>
                     <div id="WGS84-deg" class="input-field col 6s"></div>
                     <div id="WGS84-UTM" class="input-field col 6s">
@@ -97,17 +97,22 @@
 
 <div id="repoManager">
     <div class="row">
+        <div id="selectRepo" class="col s6">
+            <h4>Manage repository</h4>
+            <select id="deleteRepoId" selected>Choose repository</select>
+            <button id="deleteRepoButton" class="upload-button">Delete</button>
+        </div>
+        <div id="showRepo" class="col s6">
+            <div class="row" id="showRepoDiv">
+                <h5>Number of entries:</h5>
+            </div>
+        </div>
+    </div>
+    <div class="row">
         <div id="createRepo" class="col s6">
             <h4>Create repository</h4>
             <input id="repoIdInput" type="text" placeholder="<new repository id>">
             <button id="createRepoButton" class="upload-button">Create</button>
-        </div>
-    </div>
-    <div class="row">
-        <div id="deleteRepoList" class="input-field col s6">
-            <h4>Delete repository</h4>
-            <select id="deleteRepoId" selected>Choose repository</select>
-            <button id="deleteRepoButton" class="upload-button">Delete</button>
         </div>
     </div>
 </div>

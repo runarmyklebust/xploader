@@ -183,7 +183,18 @@ var createValue = function (type, fieldName, value, joinValue) {
 
 var createGeoPointValue = function (lat, lon) {
 
-    log.info("GeoPointValue: %s", JSON.stringify(GSC_FORMAT));
+    if (GSC_FORMAT.type === WSG_UTM) {
+
+        var latZone = GSC_FORMAT.utm.latitudeZone;
+        var lonZone = GSC_FORMAT.utm.longitudeZone;
+        var unit = GSC_FORMAT.utm.unit;
+
+        var latLonAsString = proj4j.fromUTM(lonZone, latZone, lon, lat, unit);
+
+        log.info("LatLonAsString: %s", latLonAsString);
+
+        return nodeLib.geoPointString(latLonAsString);
+    }
 
     return nodeLib.geoPoint(lat, lon);
 };

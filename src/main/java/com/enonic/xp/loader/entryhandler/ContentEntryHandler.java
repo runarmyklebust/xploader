@@ -2,15 +2,10 @@ package com.enonic.xp.loader.entryhandler;
 
 import java.util.Map;
 
-import com.google.common.base.Stopwatch;
-
 import com.enonic.xp.content.Content;
-import com.enonic.xp.content.ContentConstants;
-import com.enonic.xp.content.ContentIds;
 import com.enonic.xp.content.ContentPath;
 import com.enonic.xp.content.ContentService;
 import com.enonic.xp.content.CreateContentParams;
-import com.enonic.xp.content.PushContentParams;
 import com.enonic.xp.data.PropertyTree;
 import com.enonic.xp.loader.PropertyTreeFactory;
 import com.enonic.xp.loader.format.Format;
@@ -24,9 +19,9 @@ public class ContentEntryHandler
 
     private final Format format;
 
-    private Content rootContent;
-
     private final ContentPath root = ContentPath.from( ContentPath.ROOT, "testing" );
+
+    private Content rootContent;
 
     private int total = 0;
 
@@ -55,6 +50,11 @@ public class ContentEntryHandler
 
     }
 
+    public static Builder create()
+    {
+        return new Builder();
+    }
+
     @Override
     public void handle( final Map<String, String> values )
     {
@@ -72,23 +72,6 @@ public class ContentEntryHandler
         total++;
     }
 
-    public void publish()
-    {
-        final Content rootNode = this.contentService.getByPath( this.root );
-
-        System.out.println( "####### Starting push" );
-
-        final Stopwatch started = Stopwatch.createStarted();
-        this.contentService.push( PushContentParams.create().
-            includeChildren( true ).
-            target( ContentConstants.BRANCH_MASTER ).
-            contentIds( ContentIds.from( rootNode.getId() ) ).
-            includeDependencies( true ).
-            build() );
-
-        System.out.println( "###### Timeused publish: " + started.stop().toString() );
-    }
-
     @Override
     public int getTotal()
     {
@@ -99,11 +82,6 @@ public class ContentEntryHandler
     public String getName()
     {
         return "content";
-    }
-
-    public static Builder create()
-    {
-        return new Builder();
     }
 
     public static final class Builder

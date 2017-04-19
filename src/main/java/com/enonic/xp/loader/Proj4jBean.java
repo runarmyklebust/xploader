@@ -14,6 +14,25 @@ import com.enonic.xp.script.bean.ScriptBean;
 public class Proj4jBean
     implements ScriptBean
 {
+    public static void main( String... args )
+    {
+        // NORD: 7047614.52
+        // ØST: 193004.24
+
+        // expected
+
+        // ED50:
+        // LAT: 63.4244009
+        // LON: 8.8443174
+
+        // EU89:
+        // LAT: 63.4240923
+        // LON: 8.8426775
+
+        final Proj4jBean bean = new Proj4jBean();
+        System.out.println( bean.fromUTM( 33, 'N', 193004.24, 7047614.52, "m" ) );
+    }
+
     @Override
     public void initialize( final BeanContext context )
     {
@@ -38,19 +57,13 @@ public class Proj4jBean
         }
 
         UTM utm = UTM.valueOf( longZone, latZone, easting, northing, unitLength );
+
         CoordinatesConverter<UTM, LatLong> utmToLatLong = UTM.CRS.getConverterTo( LatLong.CRS );
         LatLong latLong = utmToLatLong.convert( utm );
 
         final double[] coordinates = latLong.getCoordinates();
 
         return coordinates[0] + "," + coordinates[1];
-    }
-
-
-    public static void main( String... args )
-    {
-        final Proj4jBean bean = new Proj4jBean();
-        System.out.println( bean.fromUTM( 33, 'N', -31210.00, 6558814, "M" ) );
     }
 
 

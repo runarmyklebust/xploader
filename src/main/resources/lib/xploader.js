@@ -22,3 +22,8 @@ exports.getFormat = function (source, fileName) {
     var result = bean.getFormat(source, fileName);
     return __.toNativeObject(result);
 };
+
+exports.preserveByteSource = function (source) {
+    var result = bean.preserveByteSource(source);
+    return __.toNativeObject(result);
+};

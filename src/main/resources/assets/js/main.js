@@ -19,6 +19,10 @@ var GCS_SELECT = '#gcsSelector';
 var WGS84_DEG_SELECTOR = "#WGS84-deg";
 var WGS84_UTM_SELECTOR = "#WGS84-UTM";
 
+var JOB_STATUS_BOX = "#jobStatus";
+var LOAD_BUTTON = "#loadBtn";
+
+var currentTask;
 
 $(function () {
 
@@ -31,8 +35,15 @@ $(function () {
     });
 
     initializeView();
-});
 
+    // getStatus();
+
+    $(LOAD_BUTTON).click(function () {
+        startDataLoad();
+    });
+
+    setInterval(getStatus, 1000)
+});
 
 var initializeView = function () {
     $('#status').hide();
@@ -40,6 +51,7 @@ var initializeView = function () {
     $(GCS_SELECTOR_DIV).hide();
     $(WGS84_DEG_SELECTOR).hide();
     $(WGS84_UTM_SELECTOR).hide();
+    $(JOB_STATUS_BOX).hide();
     toogleLoadManager();
 };
 
@@ -62,6 +74,25 @@ var renderLoadManager = function () {
 var renderRepoManager = function () {
     getRepoList($('#deleteRepoId'));
 };
+
+
+var startDataLoad = function () {
+    var data = new FormData($('#loaderForm')[0]);
+    jQuery.ajax({
+        url: dataLoaderService,
+        cache: false,
+        data: data,
+        type: 'POST',
+        contentType: false,
+        processData: false,
+        success: function (result) {
+            console.log("Result:", result);
+            currentTask = result.taskId;
+            getStatus();
+        }
+    });
+};
+
 
 function createRepo() {
     var repoIdInput = $('#repoIdInput');
@@ -228,20 +259,34 @@ var getRepoList = function (renderer) {
 };
 
 var getStatus = function () {
+
+    if (!currentTask) {
+        return;
+    }
+
     jQuery.ajax({
         url: statusServiceUrl,
         cache: false,
+        type: 'GET',
+        data: {
+            taskId: currentTask
+        },
         success: function (result) {
             console.log(result);
-            var html = "";
-            html += "<p>Status: " + result.status.jobStatus + "</p>";
-            html += "<p>Processed: " + result.status.processed + "</p>";
-            html += "<p>Speed: " + result.status.speed + "</p>";
-            html += "<p>RunTime: " + result.status.runTime + "</p>";
-
-            $('#status').html(html);
+            renderStatus(result);
         }
     });
+};
+
+var renderStatus = function (result) {
+    var html = "";
+    html += "<p>Description: " + result.description + "</p>";
+    html += "<p>State: " + result.state + "</p>";
+    html += "<p>Progress: " + result.progress.info + "</p>";
+
+    $(JOB_STATUS_BOX).html(html);
+
+    $(JOB_STATUS_BOX).show();
 };
 
 function initalizeValueSelectors(data) {
@@ -281,7 +326,7 @@ var fileUploaded = function () {
         var index = 0;
 
         html += "<table class='highlight'>";
-        html += "<th></th><th></th><th>Name in file</th><th>Fieldname</th><th>ValueType</th><th></th>";
+        html += "<th></th><th></th><th>Name in source</th><th>Node fieldname</th><th>ValueType</th><th></th>";
 
         var first = true;
         data.result.fields.forEach(function (field) {
@@ -297,8 +342,8 @@ var fileUploaded = function () {
     function renderFormatField(field, index) {
         var html = "";
         html += "<tr>";
-        html += "<td>" + renderNameElementCheckbox(index) + "</td>";
-        html += "<td>" + renderIgnoreCheckbox(index) + "</td>";
+        html += "<td class='checkbox'>" + renderNameElementCheckbox(index) + "</td>";
+        html += "<td class='checkbox'>" + renderIgnoreCheckbox(index) + "</td>";
         html += "<td>" + renderFieldName(index, field) + "</td>";
         html += "<td>" + renderAlias(index, field) + "</td>";
         html += "<td>" + renderValueType(index) + "</td>";
@@ -313,25 +358,32 @@ var fileUploaded = function () {
 
     function renderNameElementCheckbox(index) {
 
-        return renderCheckbox(FORMAT_NODE_NAME + index, "name");
+        return renderCheckbox(FORMAT_NODE_NAME + index, "Name");
     }
 
     function renderFieldName(index, field) {
 
         var name = FORMAT_FIELD_NAME + index;
         var value = field.name;
-        return renderTextField(name, value);
+        return renderTextField(name, value, true);
     }
 
     function renderAlias(index, field) {
         var name = FORMAT_FIELD_ALIAS + index;
         var value = field.name;
-        return renderTextField(name, value);
+        return renderTextField(name, value, false);
     }
 
-    function renderTextField(name, value) {
+    function renderTextField(name, value, immutable) {
         var html = "<div class='input-field'>";
-        html += "<input name='" + name + "' id='" + name + "' value='" + value + "' type='text' class='validate'>";
+
+        if (immutable) {
+            html +=
+                "<input name='" + name + "' id='" + name + "' value='" + value + "' type='text' class='validate' readonly=''" + immutable +
+                "''>";
+        } else {
+            html += "<input name='" + name + "' id='" + name + "' value='" + value + "' type='text' class='validate'>";
+        }
         html += "</div>";
         return html;
     }
@@ -362,6 +414,22 @@ var fileUploaded = function () {
         html += "<label for='" + name + "'>" + label + "</label>";
         html += "</div>";
         return html;
+    }
+
+    function getStatus() {
+        jQuery.ajax({
+            url: statusServiceUrl,
+            cache: false,
+            type: 'GET',
+            data: data,
+            success: function (result) {
+                renderJobStatus(result);
+            }
+        });
+    }
+
+    function renderJobStatus(result) {
+        console.log("status", result);
     }
 
 };

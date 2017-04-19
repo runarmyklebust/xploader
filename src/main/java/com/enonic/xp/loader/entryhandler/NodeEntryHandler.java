@@ -7,7 +7,6 @@ import com.enonic.xp.loader.PropertyTreeFactory;
 import com.enonic.xp.loader.format.Format;
 import com.enonic.xp.loader.tool.NodeNameFactory;
 import com.enonic.xp.node.CreateNodeParams;
-import com.enonic.xp.node.Node;
 import com.enonic.xp.node.NodePath;
 import com.enonic.xp.node.NodeService;
 
@@ -33,15 +32,7 @@ public class NodeEntryHandler
         final NodePath parentPath = NodePath.ROOT;
         final String nodeName = NodeNameFactory.create( this.format, values );
 
-        final NodePath newNodePath = NodePath.create( parentPath, nodeName ).build();
-
-        if ( this.nodeService.nodeExists( newNodePath ) )
-        {
-            System.out.println( "Node exists already: [" + newNodePath + "]" );
-            return;
-        }
-
-        final Node node = this.nodeService.create( CreateNodeParams.create().
+        this.nodeService.create( CreateNodeParams.create().
             name( nodeName ).
             parent( parentPath ).
             data( data ).

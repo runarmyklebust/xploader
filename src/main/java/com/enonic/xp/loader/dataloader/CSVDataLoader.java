@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.util.Map;
 
+import com.google.common.base.Stopwatch;
 import com.google.common.io.ByteSource;
 
 public class CSVDataLoader
@@ -17,9 +18,13 @@ public class CSVDataLoader
     @Override
     public void load( final DataLoaderParams params )
     {
+        System.out.println( "Starting loading CVS data" );
+
         final ByteSource source = params.getSource();
 
         boolean firstRow = true;
+
+        final Stopwatch timer = Stopwatch.createStarted();
 
         try (InputStream in = source.openStream();
              InputStreamReader isr = new InputStreamReader( in, Charset.forName( "UTF-8" ) );
@@ -39,10 +44,13 @@ public class CSVDataLoader
                 processLine( line, params );
                 processed++;
             }
+
+            System.out.printf( "Processed [%s] entries in [%s] \r\n", processed, timer.stop() );
+
         }
         catch ( IOException e )
         {
-
+            e.printStackTrace();
         }
     }
 

@@ -18,3 +18,47 @@
 .message {
     background-color: darkgreen; /* Red */
 }
+
+.importSelector {
+    width: 100%;
+}
+
+.importSelector h2 {
+    font-size: 1.8em;
+}
+
+div .row .fieldsList {
+    width: 100%;
+    padding: 0;
+    margin: 0;
+}
+
+.fieldsList tr {
+    margin-bottom: 5px;
+}
+
+.fieldsList h2 {
+    margin-bottom: 5px;
+}
+
+.fieldsList td {
+    padding: 0 0.1em 0 1.0em;
+    margin: 0;
+}
+
+.fieldsList .checkbox label {
+    height: 3rem;
+    top: 0.7rem;
+}
+
+.fieldsList td input {
+    margin: 0;
+}
+
+.fieldsList td .input-field {
+    margin: 0px;
+}
+
+.fieldsList .input-field input.select-dropdown {
+    margin: 0;
+}

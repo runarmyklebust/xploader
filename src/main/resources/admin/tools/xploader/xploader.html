@@ -35,65 +35,62 @@
 
 
 <div id="loadManager">
-
     <div class="row">
-        <form class="col s12" name="fileForm" action="{{dataLoaderService}}" method="post" enctype="multipart/form-data">
-            <h4>Select file for upload</h4>
-            <div class="file-field input-field">
-                <div class="btn">
-                    <span>File</span>
-                    <input type="file" name="file" id="fileinput">
+        <form name="fileForm" id="loaderForm" action="{{dataLoaderService}}" method="post" enctype="multipart/form-data">
+            <div class="col s12 m4 l3 importSelector">
+                <h2>Select file for upload</h2>
+                <div class="file-field input-field">
+                    <div class="btn">
+                        <span>File</span>
+                        <input type="file" name="file" id="fileinput">
+                    </div>
+                    <div class="file-path-wrapper">
+                        <input class="file-path validate" type="text" onchange="fileUploaded();">
+                    </div>
                 </div>
-                <div class="file-path-wrapper">
-                    <input class="file-path validate" type="text" onchange="fileUploaded();">
+
+                <div class="row">
+                    <div id="selectRepoList" class="input-field">
+                        <h2>Select repository</h2>
+                        <select id="selectRepoId" name="selectRepoId">Choose repository</select>
+                    </div>
                 </div>
-            </div>
 
-            <div class="row">
-                <div id="fieldsList" class="col 12s"></div>
-            </div>
-
-            <div class="row" id="gcsSelectorDiv">
-                <h4>Geographic coordinate system</h4>
-                <div class="input-field col 12s">
-                    <select id="gcsSelector" name="gcsSelector" onchange="showGCSSelector(this)">
-                        <option value="WGS84-deg">GPS-WGS84 (deg)</option>
-                        <option value="WGS84-UTM">GPS-UTM/EUREF89</option>
-                    </select>
-                    <div id="WGS84-deg" class="input-field col 6s"></div>
-                    <div id="WGS84-UTM" class="input-field col 6s">
-                        <input name="wsg84UtmLongitudeZone" id="wsg84UtmLongitudeZone" placeholder="Longitude Zone (e.g 33)"
-                               type="number"
-                               class="validate">
-                        <input name="wsg84UtmLatitudeZone" id="wsg84UtmLatitudeZone" placeholder="Latitude Zone (e.g N/E)" type="text"
-                               class="validate">
-                        <input name="wsg84UtmUnit" id="wsg84UtmUnit" placeholder="Unit (m|km)" type="text" class="validate">
+                <div class="row" id="gcsSelectorDiv">
+                    <h2>Geographic coordinate system</h2>
+                    <div class="input-field col 12s">
+                        <select id="gcsSelector" name="gcsSelector" onchange="showGCSSelector(this)">
+                            <option value="WGS84-deg">GPS-WGS84 (deg)</option>
+                            <option value="WGS84-UTM">GPS-UTM/EUREF89</option>
+                        </select>
+                        <div id="WGS84-deg" class="input-field col 6s"></div>
+                        <div id="WGS84-UTM" class="input-field col 6s">
+                            <input name="wsg84UtmLongitudeZone" id="wsg84UtmLongitudeZone" placeholder="Longitude Zone (e.g 33)"
+                                   type="number"
+                                   class="validate">
+                            <input name="wsg84UtmLatitudeZone" id="wsg84UtmLatitudeZone" placeholder="Latitude Zone (e.g N/E)" type="text"
+                                   class="validate">
+                            <input name="wsg84UtmUnit" id="wsg84UtmUnit" placeholder="Unit (m|km)" type="text" class="validate">
+                        </div>
+                    </div>
+                </div>
+                <button type="button" id="loadBtn" class="btn light-blue darken-4">Load</button>
+                <div class="row">
+                    <div class="card blue-grey darken-1">
+                        <div id="jobStatus" class="card-content white-text jobStatus">
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div class="row">
-                <div id="selectRepoList" class="input-field col s6">
-                    <h4>Select repository</h4>
-                    <select id="selectRepoId" name="selectRepoId">Choose repository</select>
+            <div class="col s12 m8 l9">
+                <div class="row">
+                    <div id="fieldsList" class="col 12s fieldsList"></div>
                 </div>
             </div>
-
-            <button class="btn light-blue darken-4" type="submit" name="action">Load</button>
         </form>
     </div>
-    <!--
-    <div class="row">
-        <div class="col 12s">
-            <label>Format</label><br>
-            <input type="text" name="format" placeholder="A comma separated format of fields that descriped ">
-            <button type="submit" name="upload" class="upload-button">Upload</button>
-        </div>
-    </div>
-    -->
-
 </div>
-
 
 <div id="repoManager">
     <div class="row">

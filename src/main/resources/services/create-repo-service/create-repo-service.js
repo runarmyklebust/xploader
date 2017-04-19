@@ -8,9 +8,7 @@ exports.post = function (req) {
         return returnError("no repo-id given");
     }
 
-    var existingRepo = repoLib.get({
-        id: repoId
-    });
+    var existingRepo = repoLib.get(repoId);
 
     if (existingRepo) {
         return returnError("repoId [" + repoId + "] already exists");

@@ -1,19 +1,15 @@
 package com.enonic.xp.loader;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import com.google.common.base.Stopwatch;
 import com.google.common.io.ByteSource;
+import com.google.common.io.Files;
 
-import com.enonic.xp.content.Content;
-import com.enonic.xp.content.ContentConstants;
-import com.enonic.xp.content.ContentIds;
-import com.enonic.xp.content.ContentPath;
 import com.enonic.xp.content.ContentService;
-import com.enonic.xp.content.PushContentParams;
-import com.enonic.xp.content.PushContentsResult;
 import com.enonic.xp.context.ContextAccessor;
 import com.enonic.xp.loader.dataloader.CSVDataLoader;
 import com.enonic.xp.loader.entryhandler.EntryHandler;
@@ -42,9 +38,13 @@ public class LoaderBean
 
     private Future<JobStatus> result;
 
+
     @SuppressWarnings("unused")
     public JobStatus load( final ByteSource source, final ScriptValue fields, final String entryHandlerName )
     {
+
+        System.out.println( "Starting backend load" );
+
         if ( loadRunnerTask != null && !result.isDone() )
         {
             return JobStatus.ALREADY_RUNNING;
@@ -60,7 +60,7 @@ public class LoaderBean
             dataLoader( csvDataLoader ).
             handler( entryHandlerFactory.create( format, entryHandlerName ) ).
             lineParser( new CSVLineParser( format ) ).
-            source( source ).
+            source( copySource( source ) ).
             build();
 
         this.result = executor.submit( this.loadRunnerTask );
@@ -68,31 +68,28 @@ public class LoaderBean
         return JobStatus.RUNNING;
     }
 
-    @SuppressWarnings("unused")
-    public void publish()
+    public ByteSource preserveByteSource( final ByteSource source )
     {
-        final Content content = this.contentService.getByPath( ContentPath.from( ContentPath.ROOT, "testing" ) );
+        return copySource( source );
+    }
 
-        final Stopwatch timer = Stopwatch.createStarted();
+    private ByteSource copySource( final ByteSource source )
+    {
+        try
+        {
+            final File tempFile = File.createTempFile( "temp", Long.toString( System.nanoTime() ) );
+            Files.asByteSink( tempFile ).writeFrom( source.openStream() );
 
-        final PushContentsResult result = this.contentService.push( PushContentParams.create().
-            contentIds( ContentIds.from( content.getId() ) ).
-            includeDependencies( true ).
-            includeChildren( true ).
-            target( ContentConstants.BRANCH_MASTER ).
-            build() );
+            System.out.printf( "Temp-file [%s] created", tempFile.getPath() );
 
-        System.out.println( "Published in: " + timer.stop().toString() );
+            return com.google.common.io.Files.asByteSource( tempFile );
+        }
+        catch ( IOException e )
+        {
+            e.printStackTrace();
+        }
 
-        //final Stopwatch unpublishTimer = Stopwatch.createStarted();
-
-        //this.contentService.unpublishContent( UnpublishContentParams.create().
-        //    contentIds( ContentIds.from( content.getId() ) ).
-        //    includeChildren( true ).
-        //    unpublishBranch( ContentConstants.BRANCH_MASTER ).
-        //    build() );
-
-        //System.out.println( "Unpublished in: " + unpublishTimer.stop().toString() );
+        return null;
     }
 
     @SuppressWarnings("unused")
@@ -103,6 +100,7 @@ public class LoaderBean
         return new FormatMapper( format );
     }
 
+    @SuppressWarnings("unused")
     public StatusMapper getStatus()
     {
         if ( this.loadRunnerTask == null )

@@ -4,6 +4,8 @@ var nodeLib = require('/lib/xp/node');
 var ioLib = require('/lib/xp/io');
 var contextLib = require('/lib/xp/context');
 var proj4j = require('/lib/proj4j');
+var taskLib = require('/lib/xp/task');
+var valueLib = require('/lib/xp/value');
 
 var FORMAT_FIELD_NAME = "field-name-";
 var FORMAT_FIELD_ALIAS = "field-alias-";
@@ -17,10 +19,6 @@ var WSG_UTM = 'WGS84-UTM';
 
 exports.post = function (req) {
 
-    log.info("PARAMS: %s", req.params);
-
-    var redirectUrl = "http://localhost:8080/admin/tool/com.enonic.app.xploader/xploader";
-
     var byteSource = portalLib.getMultipartStream("file");
     var file = portalLib.getMultipartItem("file");
     var format = parseFormat(req.params);
@@ -31,13 +29,37 @@ exports.post = function (req) {
         repo = req.params.selectRepoId;
     }
 
-    doLoadData(repo, byteSource, format);
+    var taskId = loadData(repo, byteSource, format);
 
     return {
-        redirect: redirectUrl
-    };
+        contentType: 'application/json',
+        body: {
+            taskId: taskId
+        }
+    }
 };
 
+var loadData = function (repo, byteSource, format) {
+
+    // Needs to preserve byteSource to avoid the source to be done when request returns
+    var preservedSource = xpLoaderLib.preserveByteSource(byteSource);
+
+    return taskLib.submit({
+        description: 'Loading data',
+        task: function () {
+            runInContext(repo, "master", function () {
+                doLoadData(repo, "master", preservedSource, format);
+            });
+        }
+    });
+};
+
+var runInContext = function (repo, branch, callback) {
+    return contextLib.run({
+        branch: branch,
+        repository: repo
+    }, callback);
+};
 
 function parseFormat(params) {
     var fields = [];
@@ -90,21 +112,51 @@ var parseGCSFormat = function (params) {
 
 };
 
-var doLoadData = function (repo, byteSource, format) {
+var doLoadData = function (repo, branch, byteSource, format) {
+
+    var repo = nodeLib.connect({
+        repoId: repo,
+        branch: branch
+    });
+
     var first = true;
     var processed = 0;
+    var skipped = 0;
+
+    var loadStart = new Date().getTime();
+
+    var currentSpeed = "0/s";
 
     ioLib.processLines(byteSource, function (line) {
         if (!first) {
             var data = processLine(line, format);
-            runInContext(repo, 'master', function () {
-                nodeLib.create(data);
-            });
-            log.info("Processed [" + ++processed + "]");
+            if (data) {
+                repo.create(data);
+                processed++;
+            } else {
+                skipped++;
+            }
         } else {
+            log.info("Processing file, starting");
+            taskLib.progress({
+                info: 'Starting'
+            });
             first = false;
         }
+
+        if (processed % 500) {
+            currentSpeed = (processed / ((new Date().getTime() - loadStart) / 1000)) + "/s";
+        }
+
+        taskLib.progress({
+            info: 'Processing item ' + (processed + 1) + " (" + currentSpeed + ")",
+            current: processed
+        });
     });
+
+    var loadEnd = new Date().getTime() - loadStart;
+
+    log.info("Processed [%s] nodes in [%s] ms", processed, loadEnd);
 };
 
 var processLine = function (line, format) {
@@ -153,13 +205,6 @@ var extractData = function (fields, format) {
     return data;
 };
 
-var runInContext = function (repo, branch, callback) {
-    return contextLib.run({
-        branch: branch,
-        repository: repo
-    }, callback);
-};
-
 var sanitizeValue = function (type, fieldValue) {
     return cleanStringValue(fieldValue);
 };
@@ -188,17 +233,18 @@ var createGeoPointValue = function (lat, lon) {
         var latZone = GSC_FORMAT.utm.latitudeZone;
         var lonZone = GSC_FORMAT.utm.longitudeZone;
         var unit = GSC_FORMAT.utm.unit;
-
+        
         var latLonAsString = proj4j.fromUTM(lonZone, latZone, lon, lat, unit);
 
-        return nodeLib.geoPointString(latLonAsString);
+        return valueLib.geoPointString(latLonAsString);
     }
 
-    return nodeLib.geoPoint(lat, lon);
+    return valueLib.geoPoint(lat, lon);
 };
 
-
 var cleanStringValue = function (value) {
+
+    value = value.replace(/\W]/g, '');
 
     if (value.startsWith("\"")) {
         value = value.slice(1);

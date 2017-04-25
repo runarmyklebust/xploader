@@ -12,19 +12,15 @@ exports.post = function (req) {
         return returnError("Not allowed to delete repository [" + repoId + "]");
     }
 
-    var existingRepo = repoLib.get({
-        id: repoId
-    });
+    var existingRepo = repoLib.get(repoId);
 
     if (!existingRepo) {
         return returnError("repoId [" + repoId + "] does not exists");
     }
 
-    var deletedRepo = repoLib.delete({
-        id: repoId
-    });
+    var result = repoLib.delete(repoId);
 
-    return returnMessage("Repository [" + repoId + "] deleted");
+    return returnMessage("Repository [" + repoId + "] deleted: [" + result + "]");
 };
 
 var returnMessage = function (message) {

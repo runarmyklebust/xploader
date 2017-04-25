@@ -39,6 +39,10 @@ exports.get = function (req) {
         service: 'fileParser'
     });
 
+    model.getJobsServiceUrl = portal.serviceUrl({
+        service: 'get-jobs-service'
+    });
+
 
     return {
         contentType: 'text/html',

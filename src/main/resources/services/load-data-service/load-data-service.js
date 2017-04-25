@@ -45,7 +45,7 @@ var loadData = function (repo, byteSource, format) {
     var preservedSource = xpLoaderLib.preserveByteSource(byteSource);
 
     return taskLib.submit({
-        description: 'Loading data',
+        description: 'me.myklebust.app.xploader:loadData',
         task: function () {
             runInContext(repo, "master", function () {
                 doLoadData(repo, "master", preservedSource, format);
@@ -122,17 +122,26 @@ var doLoadData = function (repo, branch, byteSource, format) {
     var first = true;
     var processed = 0;
     var skipped = 0;
+    var created = 0;
+    var failed = 0;
 
     var loadStart = new Date().getTime();
 
     var currentSpeed = "0/s";
 
     ioLib.processLines(byteSource, function (line) {
+
         if (!first) {
+            processed++;
             var data = processLine(line, format);
             if (data) {
-                repo.create(data);
-                processed++;
+                try {
+                    repo.create(data);
+                    created++;
+                } catch (e) {
+                    log.error("Could not create entry %s, %s", data, e);
+                    failed++;
+                }
             } else {
                 skipped++;
             }
@@ -149,7 +158,8 @@ var doLoadData = function (repo, branch, byteSource, format) {
         }
 
         taskLib.progress({
-            info: 'Processing item ' + (processed + 1) + " (" + currentSpeed + ")",
+            info: 'Processing item ' + (processed + 1) + " (" + currentSpeed + ")" + ", created: " + created + ", failed: " + failed +
+                  ", skipped: " + skipped,
             current: processed
         });
     });
@@ -211,10 +221,13 @@ var sanitizeValue = function (type, fieldValue) {
 
 var createValue = function (type, fieldName, value, joinValue) {
     if (type === 'instant') {
-        return "nodeLib.instant('" + value + "')";
+        return "valueLib.instant('" + value + "')";
     }
     else if (type == 'reference') {
-        return "nodeLib.reference('" + value + "')";
+        return "valueLib.reference('" + value + "')";
+    }
+    else if (type == 'number') {
+        return returnAsNumber(value);
     }
     else if (type == 'geoPointLat') {
         return createGeoPointValue(value, joinValue);
@@ -226,6 +239,10 @@ var createValue = function (type, fieldName, value, joinValue) {
     return value;
 };
 
+var returnAsNumber = function (value) {
+    return parseFloat(value);
+};
+
 var createGeoPointValue = function (lat, lon) {
 
     if (GSC_FORMAT.type === WSG_UTM) {
@@ -233,7 +250,7 @@ var createGeoPointValue = function (lat, lon) {
         var latZone = GSC_FORMAT.utm.latitudeZone;
         var lonZone = GSC_FORMAT.utm.longitudeZone;
         var unit = GSC_FORMAT.utm.unit;
-        
+
         var latLonAsString = proj4j.fromUTM(lonZone, latZone, lon, lat, unit);
 
         return valueLib.geoPointString(latLonAsString);

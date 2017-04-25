@@ -19,8 +19,13 @@ var GCS_SELECT = '#gcsSelector';
 var WGS84_DEG_SELECTOR = "#WGS84-deg";
 var WGS84_UTM_SELECTOR = "#WGS84-UTM";
 
-var JOB_STATUS_BOX = "#jobStatus";
+var RUNNING_JOBS_DIV = "#runningJobs";
 var LOAD_BUTTON = "#loadBtn";
+var JOBS_COUNTER = "#jobsCounter";
+
+var LOAD_TAB = "#loadTab";
+var REPO_TAB = "#repoTab";
+var JOBS_TAB = "#jobsTab";
 
 var currentTask;
 
@@ -36,45 +41,52 @@ $(function () {
 
     initializeView();
 
-    // getStatus();
-
     $(LOAD_BUTTON).click(function () {
         startDataLoad();
     });
 
-    setInterval(getStatus, 1000)
+    getJobsListing();
+    setInterval(getJobsListing, 1000)
 });
 
 var initializeView = function () {
+    $(JOBS_COUNTER).hide();
     $('#status').hide();
     $('#messageBox').hide();
     $(GCS_SELECTOR_DIV).hide();
     $(WGS84_DEG_SELECTOR).hide();
     $(WGS84_UTM_SELECTOR).hide();
-    $(JOB_STATUS_BOX).hide();
-    toogleLoadManager();
+    $(RUNNING_JOBS_DIV).hide();
+    toggleLoadTab();
 };
 
-var toogleLoadManager = function () {
-    renderLoadManager();
-    $('#loadManager').show();
-    $('#repoManager').hide();
+var toggleLoadTab = function () {
+    renderLoadTab();
+    $(JOBS_TAB).hide();
+    $(REPO_TAB).hide();
+    $(LOAD_TAB).show();
 };
 
-var toggleRepoManager = function () {
-    renderRepoManager();
-    $('#loadManager').hide();
-    $('#repoManager').show();
+var toggleRepoTab = function () {
+    renderRepoTab();
+    $(LOAD_TAB).hide();
+    $(JOBS_TAB).hide();
+    $(REPO_TAB).show();
 };
 
-var renderLoadManager = function () {
+var toggleJobsTab = function () {
+    $(LOAD_TAB).hide();
+    $(REPO_TAB).hide();
+    $(JOBS_TAB).show();
+};
+
+var renderLoadTab = function () {
     getRepoList($('#selectRepoId'));
 };
 
-var renderRepoManager = function () {
+var renderRepoTab = function () {
     getRepoList($('#deleteRepoId'));
 };
-
 
 var startDataLoad = function () {
     var data = new FormData($('#loaderForm')[0]);
@@ -86,9 +98,7 @@ var startDataLoad = function () {
         contentType: false,
         processData: false,
         success: function (result) {
-            console.log("Result:", result);
-            currentTask = result.taskId;
-            getStatus();
+            toggleJobsTab();
         }
     });
 };
@@ -218,8 +228,6 @@ var renderRepoList = function (result, renderer) {
         html += "<option value='" + entry.id + "'>" + entry.id + "</option>";
     });
 
-    console.log("Rendering element ", renderer);
-
     renderer.html(html);
     renderer.material_select();
 };
@@ -258,35 +266,78 @@ var getRepoList = function (renderer) {
     });
 };
 
-var getStatus = function () {
 
-    if (!currentTask) {
-        return;
-    }
-
+var getJobsListing = function () {
     jQuery.ajax({
-        url: statusServiceUrl,
+        url: getJobsServiceUrl,
         cache: false,
         type: 'GET',
-        data: {
-            taskId: currentTask
-        },
         success: function (result) {
-            console.log(result);
-            renderStatus(result);
+            renderJobsList(result);
         }
     });
 };
 
-var renderStatus = function (result) {
+var renderJobsList = function (result) {
     var html = "";
-    html += "<p>Description: " + result.description + "</p>";
-    html += "<p>State: " + result.state + "</p>";
-    html += "<p>Progress: " + result.progress.info + "</p>";
 
-    $(JOB_STATUS_BOX).html(html);
+    var runningJobs = 0;
 
-    $(JOB_STATUS_BOX).show();
+    result.tasks.forEach(function (task) {
+        if (task.state == "RUNNING") {
+            runningJobs++;
+        }
+        html += renderJobStatus(task)
+    });
+
+    $(RUNNING_JOBS_DIV).html(html);
+    $(RUNNING_JOBS_DIV).show();
+
+    renderJobsCounter(runningJobs);
+};
+
+var renderJobsCounter = function (runningJobs) {
+
+    var jobsCounterEl = $(JOBS_COUNTER);
+
+    if (runningJobs == 0) {
+        jobsCounterEl.hide();
+    } else {
+        jobsCounterEl.text(runningJobs);
+        jobsCounterEl.show();
+    }
+
+};
+
+var renderJobStatus = function (task) {
+    var html = "";
+
+    html += "<div class='card " + getCardStyle(task) + "'>";
+    html += "  <div class='card-content'>";
+    html += "   <p><span class='jobStatusLabel'>Description: </span> " + task.description + "</p>";
+    html += "   <p><span class='jobStatusLabel'>State: </span>" + task.state + "</p>";
+    html += "   <p><span class='jobStatusLabel'>Progress: </span>" + task.progress.info + "</p>";
+    html += " </div>";
+    html += "</div>";
+
+    return html;
+};
+
+var getCardStyle = function (task) {
+
+    if (task.state == "RUNNING") {
+        return "green lighten-2";
+    }
+
+    if (task.state == "FINISHED") {
+        return "grey lighten-2";
+    }
+
+    if (task.state == "FAILED") {
+        return "red lighten-2";
+    }
+
+    return "white";
 };
 
 function initalizeValueSelectors(data) {
@@ -414,22 +465,6 @@ var fileUploaded = function () {
         html += "<label for='" + name + "'>" + label + "</label>";
         html += "</div>";
         return html;
-    }
-
-    function getStatus() {
-        jQuery.ajax({
-            url: statusServiceUrl,
-            cache: false,
-            type: 'GET',
-            data: data,
-            success: function (result) {
-                renderJobStatus(result);
-            }
-        });
-    }
-
-    function renderJobStatus(result) {
-        console.log("status", result);
     }
 
 };

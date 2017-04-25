@@ -232,6 +232,7 @@ function deleteRepo() {
 var renderRepoList = function (result, renderer) {
 
     var html = "";
+    html += '<option value="" disabled selected>Select repository</option>';
     result.repoList.forEach(function (entry) {
         html += "<option value='" + entry.id + "'>" + entry.id + "</option>";
     });
@@ -385,7 +386,7 @@ var fileUploaded = function () {
         var index = 0;
 
         html += "<table class='highlight'>";
-        html += "<th></th><th></th><th>Name in source</th><th>Node fieldname</th><th>ValueType</th><th></th>";
+        html += "<th>Use in path</th><th>Skip</th><th>Name in source</th><th>Node fieldname</th><th>ValueType</th><th></th>";
 
         var first = true;
         data.result.fields.forEach(function (field) {
@@ -470,7 +471,7 @@ var fileUploaded = function () {
     function renderCheckbox(name, label) {
         var html = "<div class='input-field'>";
         html += "<input type='checkbox' class='filled-in' id='" + name + "' name='" + name + "'/>";
-        html += "<label for='" + name + "'>" + label + "</label>";
+        html += "<label for='" + name + "'></label>";
         html += "</div>";
         return html;
     }

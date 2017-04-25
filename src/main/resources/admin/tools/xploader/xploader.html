@@ -41,9 +41,10 @@
 
 <div id="loadTab">
     <div class="row">
+
         <form name="fileForm" id="loaderForm" action="{{dataLoaderService}}" method="post" enctype="multipart/form-data">
             <div class="col s12 m4 l3 importSelector">
-                <h2>Select file for upload</h2>
+                <h2>Source (csv)</h2>
                 <div class="file-field input-field">
                     <div class="btn waves-effect waves-light btn-large blue lighten-1">
                         <i class="material-icons left">view_headline</i>
@@ -57,7 +58,7 @@
 
                 <div class="row">
                     <div id="selectRepoList" class="input-field">
-                        <h2>Select repository</h2>
+                        <h2>Repository</h2>
                         <select id="selectRepoId" name="selectRepoId">Choose repository</select>
                     </div>
                 </div>

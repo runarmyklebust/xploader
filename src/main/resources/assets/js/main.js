@@ -23,12 +23,6 @@ var RUNNING_JOBS_DIV = "#runningJobs";
 var LOAD_BUTTON = "#loadBtn";
 var JOBS_COUNTER = "#jobsCounter";
 
-var LOAD_TAB = "#loadTab";
-var REPO_TAB = "#repoTab";
-var JOBS_TAB = "#jobsTab";
-
-var currentTask;
-
 $(function () {
 
     $('#createRepoButton').click(function () {
@@ -57,28 +51,42 @@ var initializeView = function () {
     $(WGS84_DEG_SELECTOR).hide();
     $(WGS84_UTM_SELECTOR).hide();
     $(RUNNING_JOBS_DIV).hide();
+    $(this).addClass('active');
     toggleLoadTab();
 };
 
 var toggleLoadTab = function () {
     renderLoadTab();
-    $(JOBS_TAB).hide();
-    $(REPO_TAB).hide();
-    $(LOAD_TAB).show();
+    activateTab("load");
+    deactivateTab("repo");
+    deactivateTab("jobs");
 };
 
 var toggleRepoTab = function () {
     renderRepoTab();
-    $(LOAD_TAB).hide();
-    $(JOBS_TAB).hide();
-    $(REPO_TAB).show();
+    activateTab("repo");
+    deactivateTab("jobs");
+    deactivateTab("load");
 };
 
 var toggleJobsTab = function () {
-    $(LOAD_TAB).hide();
-    $(REPO_TAB).hide();
-    $(JOBS_TAB).show();
+    activateTab("jobs");
+    deactivateTab("load");
+    deactivateTab("repo");
 };
+
+var activateTab = function (elementName) {
+
+    $("#" + elementName + "Nav").addClass("active");
+    $("#" + elementName + "Tab").show();
+};
+
+
+var deactivateTab = function (elementName) {
+    $("#" + elementName + "Nav").removeClass("active");
+    $("#" + elementName + "Tab").hide();
+};
+
 
 var renderLoadTab = function () {
     getRepoList($('#selectRepoId'));

@@ -28,7 +28,7 @@
 <body>
 
 <nav>
-    <div class="nav-wrapper blue">
+    <div class="nav-wrapper blue darken-4">
         <a href="#" class="brand-logo right">xpLoader</a>
         <ul id="nav-mobile" class="left hide-on-med-and-down">
             <li id="loadNav" class="active"><a href="#" onclick="toggleLoadTab()">Load</a></li>
@@ -39,96 +39,164 @@
 </nav>
 
 
-<div id="loadTab">
+<div class="container-fluid">
     <div class="row">
+        <div id="loadTab" class="fullTab loadTab">
 
-        <form name="fileForm" id="loaderForm" action="{{dataLoaderService}}" method="post" enctype="multipart/form-data">
-            <div class="col s12 m4 l3 importSelector">
-                <h2>Source (csv)</h2>
-                <div class="file-field input-field">
-                    <div class="btn waves-effect waves-light btn-large blue lighten-1">
-                        <i class="material-icons left">view_headline</i>
-                        <span>File</span>
-                        <input type="file" name="file" id="fileinput">
-                    </div>
-                    <div class="file-path-wrapper">
-                        <input class="file-path validate" type="text" onchange="fileUploaded();">
-                    </div>
-                </div>
+            <div class="col s12">
+                <ul class="stepIndicator">
+                    <li><a id="stepIndicator1" class="btn" href="#" onclick="goStep(1)">Source</a></li>
+                    <li><a id="stepIndicator2" class="btn" href="#" onclick="goStep(2)">Mapping</a></li>
+                    <li><a id="stepIndicator3" class="btn" href="#" onclick="goStep(3)">Settings</a></li>
+                    <li><a id="stepIndicator4" class="btn" href="#" onclick="goStep(4)">Load</a></li>
+                </ul>
+            </div>
 
-                <div class="row">
-                    <div id="selectRepoList" class="input-field">
-                        <h2>Repository</h2>
-                        <select id="selectRepoId" name="selectRepoId">Choose repository</select>
-                    </div>
-                </div>
+            <div class="col s12 stepWrapper valign-wrapper">
 
-                <div class="row" id="gcsSelectorDiv">
-                    <h2>Geographic coordinate system</h2>
-                    <div class="input-field col 12s">
-                        <select id="gcsSelector" name="gcsSelector" onchange="showGCSSelector(this)">
-                            <option value="WGS84-deg">GPS-WGS84 (deg)</option>
-                            <option value="WGS84-UTM">GPS-UTM/EUREF89</option>
-                        </select>
-                        <div id="WGS84-deg" class="input-field col 6s"></div>
-                        <div id="WGS84-UTM" class="input-field col 6s">
-                            <input name="wsg84UtmLongitudeZone" id="wsg84UtmLongitudeZone" placeholder="Longitude Zone (e.g 33)"
-                                   type="number"
-                                   class="validate">
-                            <input name="wsg84UtmLatitudeZone" id="wsg84UtmLatitudeZone" placeholder="Latitude Zone (e.g N/E)" type="text"
-                                   class="validate">
-                            <input name="wsg84UtmUnit" id="wsg84UtmUnit" placeholder="Unit (m|km)" type="text" class="validate">
+                <form name="fileForm" id="loaderForm" action="{{dataLoaderService}}" method="post" enctype="multipart/form-data">
+
+                    <div class="step" id="step1">
+
+                        <div class="stepInfo">
+                            <div class="stepInfoContent">
+                                <span class="stepInfoTitle">Select source</span>
+                                <p>Select a file to use as source for loading data. At the moment, CSV is the only supported
+                                    file-format.<br/>
+                                    The file should contain a header-row to be able to map the fields to node-fields</p>
+                            </div>
+                        </div>
+
+                        <div class="file-field input-field">
+                            <div class="btn waves-effect waves-light btn-large blue lighten-1">
+                                <i class="material-icons left">view_headline</i>
+                                <span>File</span>
+                                <input type="file" name="file" id="fileinput">
+                            </div>
+                            <div class="file-path-wrapper">
+                                <input class="file-path validate" type="text" onchange="fileUploaded();">
+                            </div>
                         </div>
                     </div>
+
+                    <div class="step" id="step2">
+
+                        <div class="stepInfo">
+                            <div class="stepInfoContent">
+                                <span class="stepInfoTitle">Setup mapping</span>
+                                <p>Select which fields that should be included, and also the data-types<br/>
+                                    If selecting a latitude or longitude value-type, you must specify the matching latitude/longitude to
+                                    create a geo-point</p>
+                            </div>
+                        </div>
+
+                        <div id="fieldsList" class="col s12 fieldsList">
+                            <p>Load a source</p>
+                        </div>
+                    </div>
+
+                    <div class="step" id="step3">
+
+                        <div class="stepInfo">
+                            <div class="stepInfoContent">
+                                <span class="stepInfoTitle">Other properties</span>
+                                <p>Depending on your mapping-settings, other settings are set here:</p>
+                                <ul class="collection">
+                                    <li class="collection-item"><b>Geo coordinate system:</b> Select the type of geo-coordinate system,
+                                        default is GPS-WSG84
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div id="gcsSelectorDiv" class="col s12">
+                            <h2>Geographic coordinate system</h2>
+                            <select id="gcsSelector" name="gcsSelector" onchange="showGCSSelector(this)">
+                                <option value="WGS84-deg">GPS-WGS84 (deg)</option>
+                                <option value="WGS84-UTM">GPS-UTM/EUREF89</option>
+                            </select>
+                            <div id="WGS84-deg" class="input-field col s6"></div>
+                            <div id="WGS84-UTM" class="input-field col s6">
+                                <input name="wsg84UtmLongitudeZone" id="wsg84UtmLongitudeZone" placeholder="Longitude Zone (e.g 33)"
+                                       type="number"
+                                       class="validate">
+                                <input name="wsg84UtmLatitudeZone" id="wsg84UtmLatitudeZone" placeholder="Latitude Zone (e.g N/E)"
+                                       type="text"
+                                       class="validate">
+                                <input name="wsg84UtmUnit" id="wsg84UtmUnit" placeholder="Unit (m|km)" type="text" class="validate">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="step" id="step4">
+
+                        <div class="stepInfo">
+                            <div class="stepInfoContent">
+                                <span class="stepInfoTitle">Load data</span>
+                                <p>Select the repository you are going to load data into</p>
+                            </div>
+                        </div>
+
+
+                        <div class="row">
+                            <div id="selectRepoList" class="input-field col s12">
+                                <select id="selectRepoId" name="selectRepoId">Choose repository</select>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col s12">
+                                <button type="button" id="loadBtn" class="waves-effect waves-light btn-large"><i
+                                        class="material-icons left">open_in_browser</i>Load
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!--
+                    -->
+                </form>
+            </div>
+
+        </div>
+
+        <div id="repoTab">
+            <div class="row">
+                <div id="selectRepo" class="col s6">
+                    <h4>Manage repository</h4>
+                    <select id="deleteRepoId" selected>Choose repository</select>
+                    <button id="deleteRepoButton" class="upload-button">Delete</button>
                 </div>
-                <button type="button" id="loadBtn" class="waves-effect waves-light btn-large"><i
-                        class="material-icons left">open_in_browser</i>Load
-                </button>
-            </div>
-
-            <div class="col s12 m8 l9">
-                <div class="row">
-                    <div id="fieldsList" class="col 12s fieldsList"></div>
+                <div id="showRepo" class="col s6">
+                    <div class="row" id="showRepoDiv">
+                        <h5>Number of entries:</h5>
+                    </div>
                 </div>
             </div>
-        </form>
-    </div>
-</div>
-
-<div id="repoTab">
-    <div class="row">
-        <div id="selectRepo" class="col s6">
-            <h4>Manage repository</h4>
-            <select id="deleteRepoId" selected>Choose repository</select>
-            <button id="deleteRepoButton" class="upload-button">Delete</button>
-        </div>
-        <div id="showRepo" class="col s6">
-            <div class="row" id="showRepoDiv">
-                <h5>Number of entries:</h5>
+            <div class="row">
+                <div id="createRepo" class="col s6">
+                    <h4>Create repository</h4>
+                    <input id="repoIdInput" type="text" placeholder="<new repository id>">
+                    <button id="createRepoButton" class="upload-button">Create</button>
+                </div>
             </div>
         </div>
-    </div>
-    <div class="row">
-        <div id="createRepo" class="col s6">
-            <h4>Create repository</h4>
-            <input id="repoIdInput" type="text" placeholder="<new repository id>">
-            <button id="createRepoButton" class="upload-button">Create</button>
-        </div>
-    </div>
-</div>
-<div id="jobsTab">
-    <div class="row">
-        <div class="jobsListing col 12s">
-            <h2>Jobs:</h2>
-            <div class="runningJobs" id="runningJobs">
+        <div id="jobsTab">
+            <div class="row">
+                <div class="jobsListing col 12s">
+                    <h2>Jobs:</h2>
+                    <div class="runningJobs" id="runningJobs">
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-</div>
 
-<div id="messageBox" class="messageBox">
-    <span id="repoMessage"></span>
-</div>
+        <div id="messageBox" class="messageBox">
+            <span id="repoMessage"></span>
+        </div>
+
+    </div>
 
 </body>
 </html>

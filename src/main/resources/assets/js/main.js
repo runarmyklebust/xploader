@@ -23,6 +23,13 @@ var RUNNING_JOBS_DIV = "#runningJobs";
 var LOAD_BUTTON = "#loadBtn";
 var JOBS_COUNTER = "#jobsCounter";
 
+var STEPS = {
+    "source": 1,
+    "mapping": 2,
+    "settings": 3,
+    "load": 4
+};
+
 $(function () {
 
     $('#createRepoButton').click(function () {
@@ -52,7 +59,60 @@ var initializeView = function () {
     $(WGS84_UTM_SELECTOR).hide();
     $(RUNNING_JOBS_DIV).hide();
     $(this).addClass('active');
+    deactivateSteps([STEPS.mapping, STEPS.settings, STEPS.load]);
+    goStep(1);
     toggleLoadTab();
+};
+
+var setActiveStepIndicator = function (active) {
+    var stepIndicator = getStepIndicator(active);
+    console.log("StepIndicator", stepIndicator);
+    stepIndicator.focus();
+};
+
+var getStepIndicator = function (stepNum) {
+    return $("#stepIndicator" + stepNum);
+};
+
+var deactivateSteps = function (steps) {
+    steps.forEach(function (stepNum) {
+        var indicator = getStepIndicator(stepNum);
+        indicator.attr('disabled', true);
+    });
+};
+
+var activateSteps = function (steps) {
+    steps.forEach(function (stepNum) {
+        var indicator = getStepIndicator(stepNum);
+        indicator.attr('disabled', false);
+    });
+};
+
+var goStep = function (toActivate) {
+    var stepNum = 1;
+    var currentStep = getStep(stepNum);
+
+    while (currentStep) {
+        if (stepNum != toActivate) {
+            currentStep.hide();
+            currentStep.siblings('li').removeClass('active');
+            currentStep.addClass('active');
+        } else {
+            currentStep.show();
+        }
+        currentStep = getStep(++stepNum);
+    }
+
+    setActiveStepIndicator(toActivate);
+};
+
+var getStep = function (num) {
+    var element = $("#step" + num);
+    if (element.length) {
+        return element;
+    } else {
+        return null;
+    }
 };
 
 var toggleLoadTab = function () {
@@ -81,12 +141,10 @@ var activateTab = function (elementName) {
     $("#" + elementName + "Tab").show();
 };
 
-
 var deactivateTab = function (elementName) {
     $("#" + elementName + "Nav").removeClass("active");
     $("#" + elementName + "Tab").hide();
 };
-
 
 var renderLoadTab = function () {
     getRepoList($('#selectRepoId'));
@@ -172,7 +230,6 @@ var renderSiblingsHtml = function (siblingSelectId, type) {
     var html = "<div class='input-field'>";
     html += "<select id='" + siblingSelectId + "' name='" + siblingSelectId + "' onchange='disableSiblingField(this)'>";
     html += "<option value='disabled selected'>Choose</option>";
-
 
     var index = 0;
     currentFieldData.result.fields.forEach(function (field) {
@@ -378,6 +435,8 @@ var fileUploaded = function () {
         type: 'POST',
         success: function (data) {
             renderFormat(data);
+            activateSteps([STEPS.mapping, STEPS.settings, STEPS.load]);
+            goStep(STEPS.mapping);
         }
     });
 

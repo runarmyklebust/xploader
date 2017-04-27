@@ -60,14 +60,8 @@ var initializeView = function () {
     $(RUNNING_JOBS_DIV).hide();
     $(this).addClass('active');
     deactivateSteps([STEPS.mapping, STEPS.settings, STEPS.load]);
-    goStep(1);
+    goStep(STEPS.source);
     toggleLoadTab();
-};
-
-var setActiveStepIndicator = function (active) {
-    var stepIndicator = getStepIndicator(active);
-    console.log("StepIndicator", stepIndicator);
-    stepIndicator.focus();
 };
 
 var getStepIndicator = function (stepNum) {
@@ -95,15 +89,13 @@ var goStep = function (toActivate) {
     while (currentStep) {
         if (stepNum != toActivate) {
             currentStep.hide();
-            currentStep.siblings('li').removeClass('active');
-            currentStep.addClass('active');
+            getStepIndicator(stepNum).removeClass("active");
         } else {
             currentStep.show();
+            getStepIndicator(stepNum).addClass("active");
         }
         currentStep = getStep(++stepNum);
     }
-
-    setActiveStepIndicator(toActivate);
 };
 
 var getStep = function (num) {

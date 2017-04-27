@@ -28,7 +28,7 @@
 <body>
 
 <nav>
-    <div class="nav-wrapper blue darken-4">
+    <div class="nav-wrapper blue darken-3">
         <a href="#" class="brand-logo right">xpLoader</a>
         <ul id="nav-mobile" class="left hide-on-med-and-down">
             <li id="loadNav" class="active"><a href="#" onclick="toggleLoadTab()">Load</a></li>
@@ -45,10 +45,18 @@
 
             <div class="col s12">
                 <ul class="stepIndicator">
-                    <li><a id="stepIndicator1" class="btn" href="#" onclick="goStep(1)">Source</a></li>
-                    <li><a id="stepIndicator2" class="btn" href="#" onclick="goStep(2)">Mapping</a></li>
-                    <li><a id="stepIndicator3" class="btn" href="#" onclick="goStep(3)">Settings</a></li>
-                    <li><a id="stepIndicator4" class="btn" href="#" onclick="goStep(4)">Load</a></li>
+                    <li>
+                        <button id="stepIndicator1" class="btn" href="#" onclick="goStep(1)">Source</button>
+                    </li>
+                    <li>
+                        <button id="stepIndicator2" class="btn" href="#" onclick="goStep(2)">Mapping</button>
+                    </li>
+                    <li>
+                        <button id="stepIndicator3" class="btn" href="#" onclick="goStep(3)">Settings</button>
+                    </li>
+                    <li>
+                        <button id="stepIndicator4" class="btn" href="#" onclick="goStep(4)">Load</button>
+                    </li>
                 </ul>
             </div>
 

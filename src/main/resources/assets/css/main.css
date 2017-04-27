@@ -106,14 +106,12 @@ div .row .fieldsList {
     width: 100%;
 }
 
+/* Step-indicator, lots of stuff */
 .stepIndicator {
     height: 60px;
     list-style-type: none;
     margin-top: 10px;
-    margin-left: auto;
-    margin-right: auto;
     width: 100%;
-    padding: 0;
     overflow: hidden;
 }
 
@@ -123,7 +121,7 @@ div .row .fieldsList {
     width: 25%;
 }
 
-.stepIndicator li a {
+.stepIndicator li button {
     color: black;
     text-decoration: none;
     padding: 0;
@@ -132,11 +130,14 @@ div .row .fieldsList {
     float: left;
     height: 60px;
     line-height: 60px;
-    width: 99%;
+    width: 100%;
+    border-radius: 0;
+    box-shadow: none;
     background-color: #90caf9;
+    transition: all .2s ease-out;
 }
 
-.stepIndicator li a::after {
+.stepIndicator li button::after {
     content: " ";
     display: block;
     width: 0;
@@ -144,14 +145,16 @@ div .row .fieldsList {
     border-top: 50px solid transparent; /* Go big on the size, and let overflow hide */
     border-bottom: 50px solid transparent;
     border-left: 30px solid #90caf9;
+    box-shadow: none;
     position: absolute;
     top: 50%;
     margin-top: -50px;
     left: 100%;
     z-index: 2;
+    transition: all .2s ease-out;
 }
 
-.stepIndicator li a::before {
+.stepIndicator li button::before {
     content: " ";
     display: block;
     width: 0;
@@ -159,6 +162,7 @@ div .row .fieldsList {
     border-top: 50px solid transparent;
     border-bottom: 50px solid transparent;
     border-left: 30px solid white;
+    box-shadow: none;
     position: absolute;
     top: 50%;
     margin-top: -50px;
@@ -167,35 +171,37 @@ div .row .fieldsList {
     z-index: 1;
 }
 
-.stepIndicator li a:hover {
+.stepIndicator li button[disabled=disabled]::after {
+    border-left-color: #DFDFDF;
+}
+
+/* Hovers */
+.stepIndicator li button:hover {
+    outline: none;
+    -webkit-box-shadow: none;
+    box-shadow: none;
     background: #64b5f6;
 }
 
-.stepIndicator li a:hover:after {
+.stepIndicator li button:hover:after {
     border-left-color: #64b5f6 !important;
 }
 
-.stepIndicator li a:active {
-    background: #64b5f6;
+/* Active */
+.stepIndicator li button.active {
+    background: #2196f3 !important;
+    transition: all .2s ease-out;
 }
 
-.stepIndicator li a:active:after {
-    border-left-color: #64b5f6 !important;
+.stepIndicator li button.active::after {
+    border-left-color: #2196f3 !important;
+    transition: all .2s ease-out;
 }
 
-.stepIndicator li a:focus {
-    background: #64b5f6;
-}
-
-.stepIndicator li a:focus:after {
-    border-left-color: #64b5f6 !important;
-}
-
+/* Step-info-boxes */
 .stepInfo {
-
     margin-top: 10px;
     margin-bottom: 30px;
-
 }
 
 .stepInfo .stepInfoTitle {

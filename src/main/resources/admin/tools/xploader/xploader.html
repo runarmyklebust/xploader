@@ -41,8 +41,8 @@
 
 <div class="container-fluid">
     <div class="row">
-        <div id="loadTab" class="fullTab loadTab">
 
+        <div id="loadTab" class="tabWrapper">
             <div class="col s12">
                 <ul class="stepIndicator">
                     <li>
@@ -60,12 +60,9 @@
                 </ul>
             </div>
 
-            <div class="col s12 stepWrapper valign-wrapper">
-
+            <div class="col s10 offset-s1">
                 <form name="fileForm" id="loaderForm" action="{{dataLoaderService}}" method="post" enctype="multipart/form-data">
-
                     <div class="step" id="step1">
-
                         <div class="stepInfo">
                             <div class="stepInfoContent">
                                 <span class="stepInfoTitle">Select source</span>
@@ -74,7 +71,6 @@
                                     The file should contain a header-row to be able to map the fields to node-fields</p>
                             </div>
                         </div>
-
                         <div class="file-field input-field">
                             <div class="btn waves-effect waves-light btn-large blue lighten-1">
                                 <i class="material-icons left">view_headline</i>
@@ -88,7 +84,6 @@
                     </div>
 
                     <div class="step" id="step2">
-
                         <div class="stepInfo">
                             <div class="stepInfoContent">
                                 <span class="stepInfoTitle">Setup mapping</span>
@@ -97,14 +92,12 @@
                                     create a geo-point</p>
                             </div>
                         </div>
-
                         <div id="fieldsList" class="col s12 fieldsList">
                             <p>Load a source</p>
                         </div>
                     </div>
 
                     <div class="step" id="step3">
-
                         <div class="stepInfo">
                             <div class="stepInfoContent">
                                 <span class="stepInfoTitle">Other properties</span>
@@ -116,7 +109,6 @@
                                 </ul>
                             </div>
                         </div>
-
                         <div id="gcsSelectorDiv" class="col s12">
                             <h2>Geographic coordinate system</h2>
                             <select id="gcsSelector" name="gcsSelector" onchange="showGCSSelector(this)">
@@ -137,21 +129,17 @@
                     </div>
 
                     <div class="step" id="step4">
-
                         <div class="stepInfo">
                             <div class="stepInfoContent">
                                 <span class="stepInfoTitle">Load data</span>
                                 <p>Select the repository you are going to load data into</p>
                             </div>
                         </div>
-
-
                         <div class="row">
                             <div id="selectRepoList" class="input-field col s12">
                                 <select id="selectRepoId" name="selectRepoId">Choose repository</select>
                             </div>
                         </div>
-
                         <div class="row">
                             <div class="col s12">
                                 <button type="button" id="loadBtn" class="waves-effect waves-light btn-large"><i
@@ -159,52 +147,40 @@
                                 </button>
                             </div>
                         </div>
-
                     </div>
 
-                    <!--
-                    -->
                 </form>
             </div>
 
         </div>
 
-        <div id="repoTab">
-            <div class="row">
-                <div id="selectRepo" class="col s6">
-                    <h4>Manage repository</h4>
-                    <select id="deleteRepoId" selected>Choose repository</select>
-                    <button id="deleteRepoButton" class="upload-button">Delete</button>
-                </div>
-                <div id="showRepo" class="col s6">
-                    <div class="row" id="showRepoDiv">
-                        <h5>Number of entries:</h5>
-                    </div>
-                </div>
+        <div id="repoTab" class="tabWrapper col s10 offset-s1">
+            <div id="selectRepo" class="col s12">
+                <h4>Manage repository</h4>
+                <select id="deleteRepoId" selected>Choose repository</select>
+                <button id="deleteRepoButton" class="upload-button">Delete</button>
             </div>
-            <div class="row">
-                <div id="createRepo" class="col s6">
-                    <h4>Create repository</h4>
-                    <input id="repoIdInput" type="text" placeholder="<new repository id>">
-                    <button id="createRepoButton" class="upload-button">Create</button>
-                </div>
-            </div>
-        </div>
-        <div id="jobsTab">
-            <div class="row">
-                <div class="jobsListing col 12s">
-                    <h2>Jobs:</h2>
-                    <div class="runningJobs" id="runningJobs">
-                    </div>
-                </div>
+            <div id="createRepo" class="col s12">
+                <h4>Create repository</h4>
+                <input id="repoIdInput" type="text" placeholder="<new repository id>">
+                <button id="createRepoButton" class="upload-button">Create</button>
             </div>
         </div>
 
-        <div id="messageBox" class="messageBox">
-            <span id="repoMessage"></span>
+        <div id="jobsTab" class="tabWrapper col s10 offset-s1">
+            <div class="jobsListing col 12s">
+                <h2>Jobs:</h2>
+                <div class="runningJobs" id="runningJobs">
+                </div>
+            </div>
         </div>
-
     </div>
+
+    <div id="messageBox" class="messageBox">
+        <span id="repoMessage"></span>
+    </div>
+
+</div>
 
 </body>
 </html>

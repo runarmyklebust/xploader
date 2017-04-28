@@ -63,9 +63,7 @@ div .row .fieldsList {
     margin: 0;
 }
 
-.row .col .jobsListing {
-    padding: 0;
-    margin: 10px 0 0 0;
+.jobsListing {
 }
 
 .jobsListing h2 {
@@ -85,25 +83,19 @@ div .row .fieldsList {
     font-weight: 700;
 }
 
-.fullTab {
-
-}
-
-.loadTab {
-}
-
-.step {
-    margin: auto;
-    width: 66%;
-    border: 1px lightgray;
-}
-
-.stepWrapper {
+.tabWrapper {
+    margin: 10px auto 0 auto;
 }
 
 .stepWrapper form {
     margin: auto;
     width: 100%;
+}
+
+.step {
+    margin: auto;
+    width: 100%;
+    border: 1px lightgray;
 }
 
 /* Step-indicator, lots of stuff */

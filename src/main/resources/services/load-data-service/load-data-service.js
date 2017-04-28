@@ -129,11 +129,28 @@ var doLoadData = function (repo, branch, byteSource, format) {
 
     var currentSpeed = "0/s";
 
+    var strDelimiter = ",";
+
+    var objPattern = new RegExp(
+        (
+            // Delimiters.
+            "(\\" + strDelimiter + "|\\r?\\n|\\r|^)" +
+
+            // Quoted fields.
+            "(?:\"([^\"]*(?:\"\"[^\"]*)*)\"|" +
+
+            // Standard fields.
+            "([^\"\\" + strDelimiter + "\\r\\n]*))"
+        ),
+        "gi"
+    );
+
+
     ioLib.processLines(byteSource, function (line) {
 
         if (!first) {
             processed++;
-            var data = processLine(line, format);
+            var data = processLine(line, objPattern, format);
             if (data) {
                 try {
                     repo.create(data);
@@ -169,17 +186,42 @@ var doLoadData = function (repo, branch, byteSource, format) {
     log.info("Processed [%s] nodes in [%s] ms", processed, loadEnd);
 };
 
-var processLine = function (line, format) {
-    var fields = line.split(",");
+var processLine = function (line, objPattern, format) {
+    var fields = CSVToArray(line, objPattern);
     return extractData(fields, format);
 };
+
+var CSVToArray = function (strData, objPattern) {
+    var arrData = [];
+    var arrMatches = null;
+
+    // Keep looping over the regular expression matches
+    // until we can no longer find a match.
+    while (arrMatches = objPattern.exec(strData)) {
+        var strMatchedValue;
+        if (arrMatches[2]) {
+            // We found a quoted value. When we capture
+            // this value, unescape any double quotes.
+            strMatchedValue = arrMatches[2].replace(
+                new RegExp("\"\"", "g"),
+                "\""
+            );
+        } else {
+            strMatchedValue = arrMatches[3];
+        }
+        arrData[arrData.length] = strMatchedValue;
+    }
+    return arrData;
+};
+
 
 var extractData = function (fields, format) {
     var data = {};
     var name = "";
 
     if (fields.length != format.length) {
-        log.error("Could not parse this row: %s, skipping", fields);
+        log.error("Could not parse this row: %s, has %s instead of %s - skipping", fields, fields.length, format.length);
+        debugParseError(fields, format);
         return;
     }
 
@@ -191,7 +233,7 @@ var extractData = function (fields, format) {
             continue;
         }
 
-        var fieldName = formatEntry.name;
+        var fieldName = formatEntry.alias;
         var type = formatEntry.valueType;
         var value = sanitizeValue(type, fieldValue);
 
@@ -215,8 +257,20 @@ var extractData = function (fields, format) {
     return data;
 };
 
+
+var debugParseError = function (fields, format) {
+
+    for (var i = 0; i < Math.max(fields.length, format.length); i++) {
+
+        var formatStr = format[i] ? "Format: " + format[i].name + "[" + format[i].valueType + "]" : "no format";
+        var fieldValue = fields[i] ? " - fieldValue: " + fields[i] : "no value";
+        log.info("------------------------------");
+        log.info(formatStr + " - " + fieldValue);
+    }
+};
+
 var sanitizeValue = function (type, fieldValue) {
-    return cleanStringValue(fieldValue);
+    return fieldValue ? cleanStringValue(fieldValue) : null;
 };
 
 var createValue = function (type, fieldName, value, joinValue) {

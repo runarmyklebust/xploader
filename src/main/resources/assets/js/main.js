@@ -48,6 +48,12 @@ $(function () {
 
     getJobsListing();
     setInterval(getJobsListing, 1000)
+
+    $("#selectRepoList").change(function () {
+        $(LOAD_BUTTON).attr('disabled', false);
+    });
+
+
 });
 
 var initializeView = function () {
@@ -58,6 +64,7 @@ var initializeView = function () {
     $(WGS84_DEG_SELECTOR).hide();
     $(WGS84_UTM_SELECTOR).hide();
     $(RUNNING_JOBS_DIV).hide();
+    $(LOAD_BUTTON).attr('disabled', true);
     $(this).addClass('active');
     deactivateSteps([STEPS.mapping, STEPS.settings, STEPS.load]);
     goStep(STEPS.source);
@@ -370,12 +377,17 @@ var renderJobsCounter = function (runningJobs) {
 var renderJobStatus = function (task) {
     var html = "";
 
-    html += "<div class='card " + getCardStyle(task) + "'>";
+
+    var style = getCardStyle(task);
+    html += "<div class='card horizontal " + style.color + "'>";
     html += "  <div class='card-content'>";
-    html += "   <p><span class='jobStatusLabel'>Description: </span> " + task.description + "</p>";
-    html += "   <p><span class='jobStatusLabel'>State: </span>" + task.state + "</p>";
-    html += "   <p><span class='jobStatusLabel'>Progress: </span>" + task.progress.info + "</p>";
-    html += " </div>";
+    html += "    <i class='material-icons large'>" + style.icon + "</i>";
+    html += "   </div>";
+    html += "   <div class='card-content'>";
+    html += "    <p><span class='jobStatusLabel'>Description: </span> " + task.description + "</p>";
+    html += "    <p><span class='jobStatusLabel'>State: </span>" + task.state + "</p>";
+    html += "    <p><span class='jobStatusLabel'>Progress: </span>" + task.progress.info + "</p>";
+    html += "  </div>";
     html += "</div>";
 
     return html;
@@ -383,19 +395,24 @@ var renderJobStatus = function (task) {
 
 var getCardStyle = function (task) {
 
+    var style = {};
+
     if (task.state == "RUNNING") {
-        return "green lighten-2";
+        style.color = "green lighten-2";
+        style.icon = "loop"
     }
 
     if (task.state == "FINISHED") {
-        return "grey lighten-2";
+        style.color = "grey lighten-2";
+        style.icon = "done";
     }
 
     if (task.state == "FAILED") {
-        return "red lighten-2";
+        style.color = "red lighten-2";
+        style.icon = "error_outline";
     }
 
-    return "white";
+    return style
 };
 
 function initalizeValueSelectors(data) {

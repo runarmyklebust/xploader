@@ -32,8 +32,8 @@
         <a href="#" class="brand-logo right">xpLoader</a>
         <ul id="nav-mobile" class="left hide-on-med-and-down">
             <li id="loadNav" class="active"><a href="#" onclick="toggleLoadTab()">Load</a></li>
-            <li id="repoNav"><a href="#" onclick="toggleRepoTab()">Manage repositories</a></li>
             <li id="jobsNav"><a href="#" onclick="toggleJobsTab()">Jobs <span id="jobsCounter" class="jobsCounter">2</span></a></li>
+            <li id="repoNav"><a href="#" onclick="toggleRepoTab()">Manage repositories</a></li>
         </ul>
     </div>
 </nav>
@@ -156,21 +156,33 @@
 
         <div id="repoTab" class="tabWrapper col s10 offset-s1">
             <div id="selectRepo" class="col s12">
-                <h4>Manage repository</h4>
-                <select id="deleteRepoId" selected>Choose repository</select>
-                <button id="deleteRepoButton" class="upload-button">Delete</button>
+                <div class="stepInfo">
+                    <div class="stepInfoContent">
+                        <span class="stepInfoTitle">Create repository</span>
+                        <p>Create a repository with default settings</p>
+                    </div>
+                </div>
+                <div id="createRepo" class="col s12">
+                    <input id="repoIdInput" type="text" placeholder="<new repository id>">
+                    <button id="createRepoButton" class="upload-button">Create</button>
+                </div>
+                <!-- <select id="deleteRepoId" selected>Choose repository</select>
+                 <button id="deleteRepoButton" class="upload-button">Delete</button>
+                 -->
             </div>
-            <div id="createRepo" class="col s12">
-                <h4>Create repository</h4>
-                <input id="repoIdInput" type="text" placeholder="<new repository id>">
-                <button id="createRepoButton" class="upload-button">Create</button>
-            </div>
+
         </div>
 
         <div id="jobsTab" class="tabWrapper col s10 offset-s1">
+            <div class="stepInfo">
+                <div class="stepInfoContent">
+                    <span class="stepInfoTitle">Jobs</span>
+                    <p>Running and newly finished jobs:</p>
+                </div>
+            </div>
             <div class="jobsListing col 12s">
-                <h2>Jobs:</h2>
                 <div class="runningJobs" id="runningJobs">
+                    <p>No jobs</p>
                 </div>
             </div>
         </div>

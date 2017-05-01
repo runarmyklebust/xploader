@@ -87,6 +87,14 @@ div .row .fieldsList {
     margin: 10px auto 0 auto;
 }
 
+#repoTab {
+    margin-top: 20px;
+}
+
+#jobsTab {
+    margin-top: 20px;
+}
+
 .stepWrapper form {
     margin: auto;
     width: 100%;
@@ -125,7 +133,7 @@ div .row .fieldsList {
     width: 100%;
     border-radius: 0;
     box-shadow: none;
-    background-color: #90caf9;
+    background-color: #ffab91;
     transition: all .2s ease-out;
 }
 
@@ -136,7 +144,7 @@ div .row .fieldsList {
     height: 0;
     border-top: 50px solid transparent; /* Go big on the size, and let overflow hide */
     border-bottom: 50px solid transparent;
-    border-left: 30px solid #90caf9;
+    border-left: 30px solid #ffab91;
     box-shadow: none;
     position: absolute;
     top: 50%;
@@ -172,21 +180,21 @@ div .row .fieldsList {
     outline: none;
     -webkit-box-shadow: none;
     box-shadow: none;
-    background: #64b5f6;
+    background: #ff8a65;
 }
 
 .stepIndicator li button:hover:after {
-    border-left-color: #64b5f6 !important;
+    border-left-color: #ff8a65 !important;
 }
 
 /* Active */
 .stepIndicator li button.active {
-    background: #2196f3 !important;
+    background: #ff5722 !important;
     transition: all .2s ease-out;
 }
 
 .stepIndicator li button.active::after {
-    border-left-color: #2196f3 !important;
+    border-left-color: #ff5722 !important;
     transition: all .2s ease-out;
 }
 

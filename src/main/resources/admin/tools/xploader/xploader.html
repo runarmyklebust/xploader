@@ -103,35 +103,39 @@
                                 <span class="stepInfoTitle">Other properties</span>
                                 <p>Depending on your mapping-settings, other settings are set here:</p>
                                 <ul class="collection">
-                                    <li class="collection-item"><b>Geo coordinate system:</b> Select the type of geo-coordinate system,
+                                    <li class="collection-item"><b>Path divider: </b>Divider between path elements</li>
+                                    <li class="collection-item"><b>Geo coordinate system: </b>Select the type of geo-coordinate system,
                                         default is GPS-WSG84
                                     </li>
                                 </ul>
                             </div>
                         </div>
-
-                        <div id="pathDividerSelector" class="input-field col s6">
-                            <input name="pathDivider" id="pathDivider" placeholder="_"
-                                   type="text"
-                                   maxlength="1"
-                                   class="validate">
-                            <label for="pathDivider">Path divider</label>
-                        </div>
-                        <div id="gcsSelectorDiv" class="col s12">
-                            <h2>Geographic coordinate system</h2>
-                            <select id="gcsSelector" name="gcsSelector" onchange="showGCSSelector(this)">
-                                <option value="WGS84-deg">GPS-WGS84 (deg)</option>
-                                <option value="WGS84-UTM">GPS-UTM/EUREF89</option>
-                            </select>
-                            <div id="WGS84-deg" class="input-field col s6"></div>
-                            <div id="WGS84-UTM" class="input-field col s6">
-                                <input name="wsg84UtmLongitudeZone" id="wsg84UtmLongitudeZone" placeholder="Longitude Zone (e.g 33)"
-                                       type="number"
-                                       class="validate">
-                                <input name="wsg84UtmLatitudeZone" id="wsg84UtmLatitudeZone" placeholder="Latitude Zone (e.g N/E)"
+                        <div class="row">
+                            <div id="pathDividerSelector" class="input-field col s4">
+                                <input name="pathDivider" id="pathDivider" placeholder="_"
                                        type="text"
+                                       maxlength="1"
                                        class="validate">
-                                <input name="wsg84UtmUnit" id="wsg84UtmUnit" placeholder="Unit (m|km)" type="text" class="validate">
+                                <label for="pathDivider">Path divider</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div id="gcsSelectorDiv" class="col s12">
+                                <h2>Geographic coordinate system</h2>
+                                <select id="gcsSelector" name="gcsSelector" onchange="showGCSSelector(this)">
+                                    <option value="WGS84-deg">GPS-WGS84 (deg)</option>
+                                    <option value="WGS84-UTM">GPS-UTM/EUREF89</option>
+                                </select>
+                                <div id="WGS84-deg" class="input-field col s2"></div>
+                                <div id="WGS84-UTM" class="input-field col s6">
+                                    <input name="wsg84UtmLongitudeZone" id="wsg84UtmLongitudeZone" placeholder="Longitude Zone (e.g 33)"
+                                           type="number"
+                                           class="validate">
+                                    <input name="wsg84UtmLatitudeZone" id="wsg84UtmLatitudeZone" placeholder="Latitude Zone (e.g N/E)"
+                                           type="text"
+                                           class="validate">
+                                    <input name="wsg84UtmUnit" id="wsg84UtmUnit" placeholder="Unit (m|km)" type="text" class="validate">
+                                </div>
                             </div>
                         </div>
                     </div>

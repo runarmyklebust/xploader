@@ -109,6 +109,14 @@
                                 </ul>
                             </div>
                         </div>
+
+                        <div id="pathDividerSelector" class="input-field col s6">
+                            <input name="pathDivider" id="pathDivider" placeholder="_"
+                                   type="text"
+                                   maxlength="1"
+                                   class="validate">
+                            <label for="pathDivider">Path divider</label>
+                        </div>
                         <div id="gcsSelectorDiv" class="col s12">
                             <h2>Geographic coordinate system</h2>
                             <select id="gcsSelector" name="gcsSelector" onchange="showGCSSelector(this)">
@@ -164,7 +172,10 @@
                 </div>
                 <div id="createRepo" class="col s12">
                     <input id="repoIdInput" type="text" placeholder="<new repository id>">
-                    <button id="createRepoButton" class="upload-button">Create</button>
+
+                    <button id="createRepoButton" class="waves-effect light-green waves-light btn-large"><i
+                            class="material-icons left">open_in_browser</i>Create
+                    </button>
                 </div>
                 <!-- <select id="deleteRepoId" selected>Choose repository</select>
                  <button id="deleteRepoButton" class="upload-button">Delete</button>

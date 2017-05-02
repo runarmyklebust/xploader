@@ -454,7 +454,7 @@ var fileUploaded = function () {
         var index = 0;
 
         html += "<table class='highlight'>";
-        html += "<th>Use in path</th><th>Skip</th><th>Name in source</th><th>Node fieldname</th><th>ValueType</th><th></th>";
+        html += "<th>Use in path</th><th>Skip</th><th>Sourcefield</th><th>Fieldname</th><th>ValueType</th><th></th>";
 
         var first = true;
         data.result.fields.forEach(function (field) {

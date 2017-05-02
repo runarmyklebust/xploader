@@ -22,6 +22,7 @@ exports.post = function (req) {
     var byteSource = portalLib.getMultipartStream("file");
     var file = portalLib.getMultipartItem("file");
     var format = parseFormat(req.params);
+
     parseGCSFormat(req.params);
     var repo = "not set";
 
@@ -87,11 +88,13 @@ function parseFormat(params) {
         fieldNameItem = params["field-name-" + i];
     }
 
-    return fields;
+    return {
+        fields: fields,
+        pathDivider: "_"
+    }
 }
 
 var parseGCSFormat = function (params) {
-
     GSC_FORMAT = {};
 
     if (!params.gcsSelector) {
@@ -106,14 +109,12 @@ var parseGCSFormat = function (params) {
     if (GSC_FORMAT.type === WSG_UTM) {
         GSC_FORMAT.utm = {};
         GSC_FORMAT.utm.unit = params.wsg84UtmUnit;
-        GSC_FORMAT.utm.latitudeZone = params.wsg84UtmLatitudeZone
+        GSC_FORMAT.utm.latitudeZone = params.wsg84UtmLatitudeZone;
         GSC_FORMAT.utm.longitudeZone = params.wsg84UtmLongitudeZone;
     }
-
 };
 
 var doLoadData = function (repo, branch, byteSource, format) {
-
     var repo = nodeLib.connect({
         repoId: repo,
         branch: branch
@@ -126,11 +127,8 @@ var doLoadData = function (repo, branch, byteSource, format) {
     var failed = 0;
 
     var loadStart = new Date().getTime();
-
     var currentSpeed = "0/s";
-
     var strDelimiter = ",";
-
     var objPattern = new RegExp(
         (
             // Delimiters.
@@ -145,9 +143,7 @@ var doLoadData = function (repo, branch, byteSource, format) {
         "gi"
     );
 
-
     ioLib.processLines(byteSource, function (line) {
-
         if (!first) {
             processed++;
             var data = processLine(line, objPattern, format);
@@ -219,14 +215,16 @@ var extractData = function (fields, format) {
     var data = {};
     var name = "";
 
-    if (fields.length != format.length) {
-        log.error("Could not parse this row: %s, has %s instead of %s - skipping", fields, fields.length, format.length);
-        debugParseError(fields, format);
+    var formatFields = format.fields;
+
+    if (fields.length != formatFields.length) {
+        log.error("Could not parse this row: %s, has %s instead of %s - skipping", fields, fields.length, formatFields.length);
+        debugParseError(fields, formatFields);
         return;
     }
 
     for (var i = 0; i < fields.length; i++) {
-        var formatEntry = format[i];
+        var formatEntry = formatFields[i];
         var fieldValue = fields[i];
 
         if (formatEntry.skip) {
@@ -238,7 +236,11 @@ var extractData = function (fields, format) {
         var value = sanitizeValue(type, fieldValue);
 
         if (formatEntry.nodeNameElement) {
-            name += value;
+            if (name == "") {
+                name += value;
+            } else {
+                name = name + format.pathDivider + value;
+            }
         }
 
         var joinValue = null;
